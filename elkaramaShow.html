@@ -1,0 +1,2035 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ELKARMAGellery — Luxury Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+  --bg-dark: #050608;
+  --panel: rgba(255,255,255,0.03);
+  --muted: #b8c0c8;
+  --gold: #d4af37;
+  --gold-2: #b4882d;
+  --glass: rgba(255,255,255,0.03);
+  --radius:14px;
+  --shadow: 0 12px 40px rgba(0,0,0,0.6);
+  font-family: 'Cairo', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg-dark);color:var(--muted);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.hidden{display:none !important}
+
+/* ===========================
+   Fullscreen Registration (step 0)
+   =========================== */
+#welcomeForm input{ background-color: white; }
+
+.btn-primary{
+  background:linear-gradient(90deg,var(--gold),var(--gold-2)); 
+  color:#081018;
+  padding:10px 16px;
+  border-radius:10px;
+  border:0;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn-ghost{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.06); 
+  color:var(--muted); 
+  padding:10px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.fs-note{color:#9aa4b2;margin-top:12px;font-size:13px}
+
+/* ===========================
+   Header (transparent)
+   =========================== */
+.header{
+  position:fixed; 
+  left:16px; right:16px; top:16px; 
+  z-index:90;
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between; 
+  gap:12px;
+  padding:12px 18px; 
+  border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+  backdrop-filter: blur(6px) saturate(1.05);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo .brand{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;font-weight:700}
+.logo .tag{font-size:12px;color:#9aa4b2}
+.nav{display:flex;gap:10px;align-items:center}
+.nav .nav-btn{
+  padding:8px 12px;border-radius:10px;color:var(--muted);
+  font-size:14px;border:1px solid transparent;cursor:pointer;
+}
+.nav .nav-btn:hover{
+  background: rgba(212,175,55,0.06); 
+  color:var(--gold); 
+  border-color: rgba(212,175,55,0.06)
+}
+
+/* Dropdown sections panel */
+.sections-panel{
+  position: absolute; 
+  top:56px; 
+  right:0; 
+  min-width:260px; 
+  border-radius:10px; 
+  padding:10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03); 
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+}
+.sections-panel a{display:block;padding:8px 10px;border-radius:8px;color:var(--muted)}
+.sections-panel a:hover{background:rgba(255,255,255,0.02); color:var(--gold)}
+
+/* ===========================
+   Page container & layout
+   =========================== */
+.container{max-width:1200px;margin:110px auto 60px;padding:28px}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:20px}
+@media (max-width:980px){ 
+  .layout{grid-template-columns:1fr} 
+  .header{left:12px;right:12px} 
+}
+
+.panel{
+  background:var(--panel); 
+  padding:18px; 
+  border-radius:12px; 
+  border:1px solid rgba(255,255,255,0.03); 
+  box-shadow:var(--shadow)
+}
+.panel h3{color:var(--gold); margin:0 0 8px}
+label{display:block;color:#9aa4b2;margin-top:10px}
+input,textarea,select{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.04);
+  background:transparent;
+  color:var(--muted);
+  outline:none
+}
+
+
+/* preview images */
+.preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.preview img{
+  width:72px;
+  height:72px;
+  border-radius:8px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.03)
+}
+
+/* masonry area */
+.masonry-card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); 
+  padding:16px; 
+  border-radius:12px; 
+  border:1px solid rgba(255,255,255,0.03); 
+  box-shadow:var(--shadow)
+}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.status{margin-left:auto;font-size:13px;color:#bfc8d6}
+
+.masonry{
+  column-count:3; 
+  column-gap:12px; 
+  margin-top:12px
+}
+@media (max-width:700px){ .masonry{column-count:1} }
+
+.masonry-item{
+  display:inline-block;
+  width:100%;
+  margin:0 0 12px;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.02); 
+  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.008))
+}
+.masonry-item img{
+  width:100%;
+  display:block;
+  height:auto;
+  vertical-align:middle;
+  transform-origin:center center;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+/* ✅ Effects only — without breaking anything */
+.masonry-item img.active{
+  will-change: transform, opacity;
+  opacity:1;
+}
+
+/* ZOOM */
+.masonry-item img.effect-zoom{opacity:0;transform:scale(0.96)}
+.masonry-item img.effect-zoom.active{opacity:1;transform:scale(1.05)}
+
+/* FADE */
+.masonry-item img.effect-fade{opacity:0}
+.masonry-item img.effect-fade.active{opacity:1}
+
+/* SLIDE */
+.masonry-item img.effect-slide{opacity:0;transform:translateX(30px)}
+.masonry-item img.effect-slide.active{opacity:1;transform:translateX(0)}
+
+/* top button */
+.to-top{
+  position:fixed;
+  bottom:28px;
+  left:28px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-2));
+  color:#081018;
+  padding:10px;
+  border-radius:999px;
+  border:0;
+  cursor:pointer;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5)
+}
+
+/* overlays */
+.overlay{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.6);
+  z-index:200
+}
+.modal{
+  background:linear-gradient(180deg,#0b0f12,#0f1316); 
+  padding:18px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.02); 
+  color:var(--muted); 
+  width:92%; 
+  max-width:520px
+}
+.modal h3{color:var(--gold); margin:0 0 8px}
+
+#welcomeForm{text-align:center;padding:50px 20px}
+#welcomeForm input{width:280px;padding:12px;margin:10px 0;border:none;border-radius:8px}
+#welcomeForm button{padding:12px 25px;margin:10px;border:none;border-radius:8px;cursor:pointer;font-size:18px}
+.start{background:gold;color:black}
+.no{background:#444;color:#fff}
+
+#blockedMessage{display:none;text-align:center;font-size:24px;padding:40px;cursor:pointer}
+#siteContent{display:none;padding-bottom:100px}
+/* FULLSCREEN IMAGE EFFECTS */
+img.effect-zoom {
+  opacity: 0;
+  transform: scale(0.6); /* Starts very small */
+}
+
+img.effect-zoom.active {
+  opacity: 1;
+  transform: scale(1); /* Gradually scales up */
+  transition: transform 1s ease, opacity 1s ease; /* Longer duration for smooth motion */
+}
+
+/* Remaining effects */
+img.effect-fade {
+  opacity: 0;
+}
+img.effect-fade.active {
+  opacity: 1;
+}
+img.effect-slide {
+  opacity: 0;
+  transform: translateX(100vw); /* Start off-screen to the right */
+}
+
+img.effect-slide.active {
+  opacity: 1;
+  transform: translateX(-100vw); /* Gradually moves left to exit the screen */
+  transition: transform 4s linear, opacity 0.4s ease-in-out;
+}
+/* Blur Fade effect */
+img.effect-blur {
+  opacity: 0;
+  filter: blur(15px);
+  transition: opacity 1s ease,filter 1s ease;
+}
+
+img.effect-blur.active {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ===== Spin Effect ===== */
+img.effect-spin {
+  opacity: 0;
+  transform: rotate(-180deg) scale(0.5);
+  transition: transform 1s ease, opacity 1s ease;
+}
+
+img.effect-spin.active {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+ 
+/* ===== Flip 3D Effect ===== */
+img.effect-flip3d {
+  opacity: 0;
+  transform: rotateY(90deg) scale(0.9);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+img.effect-flip3d.active {
+  opacity: 1;
+  transform: rotateY(0deg) scale(1);
+  transition: transform 1.1s ease, opacity 0.8s ease;
+}
+
+/* ===== ScaleX Effect (Horizontal Stretch) ===== */
+img.effect-scalex {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+img.effect-scalex.active {
+  opacity: 1;
+  transform: scaleX(1);
+  transition: transform 1s ease, opacity .6s ease;
+}
+
+/* ===== ScaleY Effect (Vertical Stretch) ===== */
+img.effect-scaley {
+  opacity: 0;
+  transform: scaleY(0);
+}
+
+img.effect-scaley.active {
+  opacity: 1;
+  transform: scaleY(1);
+  transition: transform 1s ease, opacity .6s ease;
+}
+
+/* ===== Bounce Effect ===== */
+img.effect-bounce {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+img.effect-bounce.active {
+  opacity: 1;
+  animation: bounceIn 1.1s ease forwards;
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0.85); }
+  50%  { transform: scale(1.04); }
+  75%  { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* ===== Rotate 3D ===== */
+img.effect-rotate3d {
+  opacity: 0;
+  transform: perspective(1000px) rotateY(90deg);
+}
+
+img.effect-rotate3d.active {
+  opacity: 1;
+  animation: rotate3dIn 1.1s ease forwards;
+}
+
+@keyframes rotate3dIn {
+  0% {
+    transform: perspective(1000px) rotateY(90deg);
+  }
+  60% {
+    transform: perspective(1000px) rotateY(-10deg);
+  }
+  80% {
+    transform: perspective(1000px) rotateY(5deg);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(0deg);
+  }
+}
+
+/* ===== Shutter Effect ===== */
+img.effect-shutter {
+  opacity: 1;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+img.effect-shutter.active {
+  animation: shutterOpen 1s ease forwards;
+}
+
+@keyframes shutterOpen {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+
+/* Smooth animation for all effects */
+/* Transitions for simple effects only */
+img.effect-zoom,
+img.effect-fade,
+img.effect-slide,
+img.effect-blur,
+img.effect-spin,
+img.effect-flip3d,
+img.effect-scalex,
+img.effect-scaley {
+  transition: opacity 0.9s ease, transform 0.9s ease;
+  transform-origin: center center;
+}
+/* Animation effects only */
+img.effect-bounce,
+img.effect-rotate3d,
+img.effect-shutter {
+  transition: none;
+}
+
+
+#floatingControls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 99999;
+}
+
+#floatingControls button {
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+#floatingControls button:hover {
+  background: gold;
+  color: #000;
+}
+
+/* Only appears when the active class is added */
+#floatingControls.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+ /* social media show */
+.social-card{
+  margin-top:18px;
+  padding:16px;
+  border-radius:16px;
+  background:#111;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  animation:fadeUp .6s ease forwards;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.social-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.social-btn{
+  padding:10px 14px;
+  border-radius:12px;
+  background:#1c1c1c;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  transition:.35s ease;
+  position:relative;
+  overflow:hidden;
+}
+
+.social-btn:hover{
+  transform:translateY(-4px) scale(1.03);
+  box-shadow:0 10px 20px rgba(0,0,0,.4);
+}
+
+.social-btn::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center,rgba(255,255,255,.25),transparent 70%);
+  opacity:0;
+  transition:.3s;
+}
+
+.social-btn:active::after{
+  opacity:1;
+}
+
+/* Platform colors */
+.fb:hover{ background:#1877f2; }
+.tt:hover{ background:#000; }
+.th:hover{ background:#2b2b2b; }
+
+/* Video button */
+.video-btn{
+  padding:10px 18px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  font-size:14px;
+  animation:pulse 2s infinite;
+  transition:.3s;
+}
+
+.video-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 10px 25px rgba(255,75,43,.45);
+}
+
+/* Animations */
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(20px); }
+  to{ opacity:1; transform:none; }
+}
+
+@keyframes pulse{
+  0%{ box-shadow:0 0 0 0 rgba(255,75,43,.5); }
+  70%{ box-shadow:0 0 0 12px transparent; }
+  100%{ box-shadow:0 0 0 0 transparent; }
+}
+
+/* YouTube Button */
+.yt{
+  background:#1c1c1c;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+/* Hover Glow */
+.yt:hover{
+  background:#ff0000;
+  box-shadow:
+    0 0 10px rgba(255,0,0,.6),
+    0 0 25px rgba(255,0,0,.4);
+}
+
+/* Icon animation */
+.yt .icon{
+  font-size:16px;
+  transition:.3s;
+}
+
+.yt:hover .icon{
+  transform:scale(1.2);
+}
+
+/* Shake once */
+.shake-once{
+  animation:shake .6s ease 1;
+}
+
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-2px)}
+  100%{transform:translateX(0)}
+}
+
+#about {
+    margin-top:24px;
+    padding:16px;
+    background-color:#f9f9f9;
+    border-radius:12px;
+    box-shadow:0 4px 8px rgba(0,0,0,0.05);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+  }
+
+  #about.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+ .muted {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+}
+@media (max-width:400px){
+  .masonry{
+    column-gap:6px;
+  }
+  .masonry-item{
+    border-radius:8px;
+  }
+  .sections-panel{
+    min-width: auto;
+    width: 90vw;
+    right: 5vw;
+  }
+/* Images in the masonry are smaller */
+  .masonry-item img{
+    width: 100%;
+    height: auto;
+  }
+
+/* Header and menu buttons slightly smaller */
+  .nav .nav-btn,
+  #btnStart, #btnStartLoop, #btnSaveImgs, #btnClearImgs,
+  #btnSaveSettings, #btnResetSettings{
+    padding:6px 10px;
+    font-size:12px;
+  }
+
+ /* Floating control buttons are smaller */
+  #floatingControls button{
+    padding:6px 10px;
+    font-size:12px;
+  }
+
+/* Improve spacing between elements */
+  .layout{
+    gap:8px;
+  }
+
+  .panel{
+    padding:12px;
+  }
+  /* modals */
+  .modal {
+    width: 95%;       /* Almost covers the entire screen */
+    padding: 12px;    /* Reduce padding */
+  }
+
+  .modal h3 {
+    font-size: 16px;  /* Reduce heading size */
+  }
+
+  .modal p {
+    font-size: 13px;  /* Reduce text size */
+  }
+
+  /* floating controls */
+  #floatingControls {
+    bottom: 12px;
+    left: 12px;
+    gap: 6px;
+  }
+
+  #floatingControls button {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}
+/* ===== Responsive header and menu ===== */
+@media (max-width:980px){
+  .header{
+    flex-direction: column;
+    align-items: flex-start;
+    gap:8px;
+    padding:10px 12px;
+  }
+  .nav{
+    width: 100%;
+    justify-content: space-between;
+  }
+  .nav .nav-btn{
+    flex:1;
+    text-align: center;
+  }
+}
+
+/* ===== Optimize masonry for medium screens ===== */
+@media (max-width:1100px){
+  .masonry{
+    column-count:2;
+    column-gap:10px; /* unified spacing */
+  }
+}
+
+
+@media (max-width:700px){
+  .masonry{
+    column-count:1;
+    column-gap:8px;
+  }
+  .layout{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+}
+@media (min-width:1101px) and (max-width:1599px){
+  .masonry{
+    column-count:3;
+    column-gap:14px;
+  }
+
+  .panel{
+    padding:20px;
+  }
+
+  .nav .nav-btn,
+  #btnStart, #btnStartLoop, #btnSaveImgs, #btnClearImgs,
+  #btnSaveSettings, #btnResetSettings{
+    padding:10px 14px;
+    font-size:14px;
+  }
+
+  #floatingControls button{
+    padding:8px 12px;
+    font-size:13px;
+  }
+
+  .modal{
+    width:500px;
+    padding:18px;
+  }
+
+  .modal h3{
+    font-size:18px;
+  }
+
+  .modal p{
+    font-size:15px;
+  }
+}
+
+@media (min-width:1600px){
+  .container{
+    max-width: 1600px;
+    padding: 40px;
+  }
+
+  .masonry{
+    column-count: 4;
+    column-gap: 16px;
+  }
+
+  .masonry-item{
+    border-radius:16px;
+  }
+
+  .panel{
+    padding:24px;
+  }
+
+  .nav .nav-btn,
+  #btnStart, #btnStartLoop, #btnSaveImgs, #btnClearImgs,
+  #btnSaveSettings, #btnResetSettings{
+    padding:12px 18px;
+    font-size:16px;
+  }
+
+  #floatingControls button{
+    padding:10px 16px;
+    font-size:14px;
+  }
+
+  .modal{
+    width: 600px;
+    padding:20px;
+  }
+
+  .modal h3{
+    font-size:20px;
+  }
+
+  .modal p{
+    font-size:16px;
+  }
+}
+
+
+</style>
+</head>
+<!-- EmailJS library -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  // استبدل YOUR_USER_ID بالـ User ID من حسابك في EmailJS
+  emailjs.init('AiR0x0VopMvn2lOhN');
+</script>
+
+<body>
+
+   <!-- Fullscreen registration (appears on top until user submits) -->
+   <div id="welcomeForm">
+    <h2 style="color: gold;">Welcome to ELKARMA Gallery</h2>
+    <input type="text" id="username" placeholder="Enter your name here" />
+    <br>
+    <input type="email" id="email" placeholder="Enter your email" />
+    <br><br>
+    <button class="start" onclick="startExperience()">Sign In ✅</button>
+    <button class="no" onclick="denyAccess()">Not Now</button>
+  </div>
+
+<!-- ---------------- Blocked Message ---------------- -->
+<div id="blockedMessage">❌ Sorry… You cannot access us at the moment.</div>
+
+  <!-- Header -->
+  <div id="siteContent">
+    <div class="header" role="banner" aria-label="Header">
+      <div class="logo">
+        <div>
+          <div class="brand">ELKARMAGellery</div>
+          <div class="tag">Showcase Your Photos in Luxury</div>
+        </div>
+      </div>
+
+      <div style="position:relative">
+        <nav class="nav" role="navigation">
+          <button id="btnSections" class="nav-btn">Sections ▾</button>
+          <a class="nav-btn" href="#show">Display Screen</a>
+        </nav>
+
+        <div id="sectionsPanel" class="sections-panel hidden" style="right:0">
+          <a href="#settings" class="sec-link">Display Settings</a>
+          <a href="#upload" class="sec-link">Upload Photos</a>
+          <a href="#socials" class="sec-link">Social Media & Video</a>
+          <a href="#contact" class="sec-link">Contact Information</a>
+          <a href="#about" class="sec-link">About Us</a>
+        </div> 
+      </div>
+    </div>
+
+    <!-- Page container -->
+    <div class="container" id="mainSite">
+      <div class="layout">
+
+        <!-- LEFT PANEL -->
+        <aside class="panel" id="leftPanel">
+          <h3>Display Settings & Upload Photos</h3>
+
+          <div id="settings" style="margin-top:8px">
+           <label>⏱ Duration (ms)</label>
+            <input id="optDelay" type="number" min="300" value="1100">
+            <label>Display Effect</label>
+            <select id="optEffect">
+              <option value="zoom">Zoom</option>
+              <option value="fade">Fade</option>
+              <option value="slide">Slide</option>
+              <option value="blur">Blur Fade</option>
+              <option value="spin">Spin</option>
+              <option value="flip3d">Flip 3D</option>
+              <option value="scalex">Scale X (Horizontal Stretch)</option>
+              <option value="scaley">Scale Y (Vertical Stretch)</option>
+              <option value="bounce">Bounce</option>
+              <option value="rotate3d">Rotate 3D</option>
+              <option value="shutter">Shutter</option>
+            </select>
+            <div id="audioSettings" style="margin-top:12px">
+              <label>🎵 Background Music</label>
+              <select id="audioSelect">
+                <option value="">Select an audio file</option>
+               <option value="local">Audio file from your device</option>
+                <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">Lost in void</option>
+                <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3">At the end of all things</option>
+                <option value="./music&videos/happy-birthday-155461.mp3">Happy birthday</option>
+                <option value="./music&videos/Christmas-Magic-chosic.com_.mp3">Christmas magic</option>
+                <option value="./music&videos/Lady.mp3">Lady</option>
+                <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3">Sun shine</option>
+                <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3">Happy-Clappy</option>
+                <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3">Scott-Buckley-Moonlight</option>
+                <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams Elthanaty-Hany Shenoda</option>
+                <option value="./music&videos/10NZ39BH.mp3">Omar Khairat - Afwan Ayyuha Al-Qanun</option>
+                <option value="./music&videos/53gp29hm.mp3">Omar Khairat - Qadiyat Am Ahmed</option>
+                <option value="./music&videos/622S72Tc.mp3">Arefa - Omar Khairat</option>
+              <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa - Omar Khairat</option>
+               <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader - El Essily</option>
+              </select>
+              <input type="file" id="audioFileInput" accept="audio/*" style="display:none; margin-top:8px;">
+            </div>            
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button id="btnSaveSettings" class="btn-ghost">Save Settings</button>
+             <button id="btnResetSettings" class="btn-ghost">Restore Default</button>
+            </div>
+          </div>
+
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div id="upload" style="margin-top:8px">
+            <label>Select photos (multiple selection allowed)</label>
+            <input id="fileInput" type="file" accept="image/*" multiple>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="btnSaveImgs" class="btn-primary">Save Photos</button>
+              <button id="btnClearImgs" class="btn-ghost">Clear Photos</button>
+            </div>
+            <div class="preview" id="preview"></div>
+            <div class="muted tiny" style="margin-top:8px">
+                Photos are saved locally in the browser only (sessionStorage).
+           </div>
+          </div>
+
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div id="feedbackBox" class="hidden" style="margin-top:8px">
+            <h3 style="font-size:15px;margin-bottom:6px">What do you think of the slideshow?</h3>
+            <div style="background:linear-gradient(90deg, rgba(212,175,55,0.04), rgba(255,255,255,0.01));padding:10px;border-radius:8px;border:1px solid rgba(212,175,55,0.05)">
+             <label>Tell us</label>
+             <textarea id="feedback" rows="4" placeholder="Your feedback..."></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px">
+               <button id="btnSendFeedback" class="btn-primary">Send</button>
+                <button id="btnSkipFeedback" class="btn-ghost">Skip</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT PANEL -->
+        <section class="masonry-card" id="rightPanel">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-weight:700;color:var(--gold)">Display Screen</div>
+            <div class="status" id="status">Ready</div>
+          </div>
+
+          <div class="controls" style="margin-top:12px">
+            <button id="btnStart" class="btn-primary">▶️ Play</button>
+           <button id="btnStartLoop" class="btn-primary">▶️ Continuous</button>
+          </div>
+
+          <div id="show" class="masonry" style="margin-top:14px;min-height:220px"></div>
+
+          <div id="socials" class="social-card">
+            <div class="card-title">Social Media & Video</div>
+          
+            <div class="social-actions">
+              <a href="https://www.facebook.com/share/r/1HJi21NnKQ/" target="_blank" class="social-btn fb">
+                <span>Facebook</span>
+              </a>
+          
+              <a href="https://www.tiktok.com/@ms16075/video/7578244787942345998?is_from_webapp=1&sender_device=pc&web_id=7579750095094023710" target="_blank" class="social-btn tt">
+                <span>TikTok</span>
+              </a>
+          
+              <a href="https://youtube.com/shorts/KxykSB_OgtY?si=cnZTDOLXQNCBuSoj" target="_blank" class="social-btn yt shake-once">
+                <span class="icon">▶</span>
+                <span>YouTube</span>
+              </a>
+              
+              <button 
+               id="playVideo"
+               class="video-btn"
+               data-video="./music&videos/Explain.mp4">
+               ▶ Watch Video
+               </button>
+
+            </div>
+          </div>
+          
+
+          <div id="contact" style="margin-top:18px">
+            <div class="card-title">Contact Information</div>
+            <div class="muted">Email: <strong style="color:var(--gold)">malakshafek88@gmail.com </strong></div>
+            <div class="muted">Phone: <strong style="color:var(--gold)"> 201-736-5406 </strong></div>
+            <div style="margin-top:8px">
+              <label>Send us a message (optional)</label>
+              <input id="contactMsg" placeholder="Type your message...">
+              <div style="margin-top:8px"><button id="btnContactSend" class="btn-ghost">Send</button></div>
+            </div>
+          </div>
+
+          <div id="about">
+            <h2 class="card-title">About Us</h2>
+           <p class="muted">
+              We are here to present your memories and adventures in a joyful and delightful way, with a touch of nostalgia to make every moment special and unforgettable.
+          </p>
+          </div>
+
+          <footer style="margin-top:14px">
+             ELKARMAGellery — Local Slideshow Experience · Luxury Design <span id="currentDate"></span>
+          </footer>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Floating Controls ===== -->
+  <div id="floatingControls">
+    <button id="fcPause">Pause</button>
+    <button id="fcResume">Resume</button>
+    <button id="fcStop">Stop</button>
+</div>
+
+  <!-- Overlays -->
+  <div id="overlayConfirm" class="overlay hidden">
+    <div class="modal">
+      <h3>Confirmation</h3>
+      <p id="confirmText">Are you sure?</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="confirmYes" class="btn-primary">Yes</button>
+        <button id="confirmNo" class="btn-ghost">No</button>
+      </div>
+    </div>
+</div>
+
+  <div id="overlayFarewell" class="overlay hidden">
+    <div class="modal">
+      <h3 id="farewellTitle">Thank you for visiting</h3>
+      <p id="farewellText" class="muted">We hope you enjoyed the slideshow</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="farewellOk" class="btn-primary">OK</button>
+      </div>
+    </div>
+</div>
+
+<script>
+/* ============================
+   Keys & element refs
+   ============================ */
+const LS_USER='elk_user';
+const LS_SETTINGS='elk_settings';
+
+const mainSite = document.getElementById('mainSite');
+const btnSections = document.getElementById('btnSections');
+const sectionsPanel = document.getElementById('sectionsPanel');
+const secLinks = document.querySelectorAll('.sec-link');
+
+const btnRegister = document.getElementById('btnRegister');
+const btnClearAll = document.getElementById('btnClearAll');
+const welcomeEl = document.getElementById('welcomeForm');
+
+const fileInput = document.getElementById('fileInput');
+const btnSaveImgs = document.getElementById('btnSaveImgs');
+const btnClearImgs = document.getElementById('btnClearImgs');
+const preview = document.getElementById('preview');
+
+const btnStart = document.getElementById('btnStart');
+const btnPause = document.getElementById('btnPause');
+const btnResume = document.getElementById('btnResume');
+const btnCancel = document.getElementById('btnCancel');
+const btnEnd = document.getElementById('btnEnd');
+const statusEl = document.getElementById('status');
+const masonry = document.getElementById('show');
+
+const optDelay = document.getElementById('optDelay');
+const optEffect = document.getElementById('optEffect');
+const btnSaveSettings = document.getElementById('btnSaveSettings');
+const btnResetSettings = document.getElementById('btnResetSettings');
+
+const feedbackBox = document.getElementById('feedbackBox');
+const feedbackInput = document.getElementById('feedback');
+const btnSendFeedback = document.getElementById('btnSendFeedback');
+const btnSkipFeedback = document.getElementById('btnSkipFeedback');
+
+const overlayConfirm = document.getElementById('overlayConfirm');
+const confirmText = document.getElementById('confirmText');
+const confirmYes = document.getElementById('confirmYes');
+const confirmNo = document.getElementById('confirmNo');
+
+const overlayFarewell = document.getElementById('overlayFarewell');
+const farewellText = document.getElementById('farewellText');
+const farewellOk = document.getElementById('farewellOk');
+
+const overlayVideo = document.getElementById('overlayVideo');
+const playVideo = document.getElementById('playVideo');
+const closeVideo = document.getElementById('closeVideo');
+const promoVideo = document.getElementById('promoVideo');
+
+const contactMsg = document.getElementById('contactMsg');
+const btnContactSend = document.getElementById('btnContactSend');
+
+const toTop = document.getElementById('toTop');
+
+let isLoopMode = false;
+
+// Keep only these two functions
+function saveToLS(key, value){
+  sessionStorage.setItem(key, JSON.stringify(value));
+}
+function readFromLS(key){
+  try { return JSON.parse(sessionStorage.getItem(key)); }
+  catch(e) { return null; }
+}
+let images = [];
+let playIndex = 0;
+let isPlaying = false;
+let isPaused = false;
+
+/* ============================
+   Helpers: storage & UI
+   ============================ */
+function show(el){
+  if(!el) return;
+  el.classList.remove('hidden');
+  if(!el.contains(document.activeElement)) el.setAttribute('aria-hidden','false');
+}
+function hide(el){
+  if(!el) return;
+  el.classList.add('hidden');
+  if(!el.contains(document.activeElement)) el.setAttribute('aria-hidden','true');
+}
+function showTemp(el,ms=2000){
+  if(!el) return;
+  show(el);
+  setTimeout(()=> hide(el), ms);
+}
+function smoothScrollTo(el){
+  if(!document.querySelector(el)) return;
+  document.querySelector(el).scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ============================
+   Start experience
+   ============================ */
+function startExperience() {
+  const name = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  if (name === "" || email === "") { 
+  alert("Please enter your name and email before proceeding."); 
+  return; 
+}
+
+  const wf = document.getElementById("welcomeForm");
+  const sc = document.getElementById("siteContent");
+  if(wf) wf.style.display = "none";
+  if(sc) sc.style.display = "block";
+}
+// audia files uplod
+const audioSelect = document.getElementById('audioSelect');
+const audioFileInput = document.getElementById('audioFileInput');
+
+let selectedAudioSrc = ""; // Final audio file URL
+let audioPlayer = new Audio(); // Audio player
+
+// When selecting an option from the list
+audioSelect.addEventListener('change', () => {
+  if(audioSelect.value === "local"){
+    audioFileInput.click(); // Open file selection window
+  } else {
+    // Select from pre-existing files
+    selectedAudioSrc = audioSelect.value;
+    audioPlayer.src = selectedAudioSrc;
+    audioPlayer.loop = true;
+  }
+});
+
+// When selecting a file from the device
+audioFileInput.addEventListener('change', () => {
+  const file = audioFileInput.files[0];
+  if (!file) return;
+
+  // Create audio URL
+  selectedAudioSrc = URL.createObjectURL(file);
+  audioPlayer.src = selectedAudioSrc;
+  audioPlayer.loop = true;
+
+  // Check if there is an option for local audio
+  let localOption = audioSelect.querySelector('option[data-local="true"]');
+
+  // If not present → create it
+  if (!localOption) {
+    localOption = document.createElement('option');
+    localOption.dataset.local = "true";
+    audioSelect.appendChild(localOption);
+  }
+
+  // Update the file name in the list
+  localOption.value = selectedAudioSrc;
+  localOption.textContent = `🎵 ${file.name}`;
+
+  // Automatically select it
+  audioSelect.value = selectedAudioSrc;
+});
+
+/* ============================
+   Deny access
+   ============================ */
+function denyAccess() {
+  const wf = document.getElementById("welcomeForm");
+  const bm = document.getElementById("blockedMessage");
+  if(wf) wf.style.display = "none";
+  if(bm) bm.style.display = "block";
+}
+const blockedMessageEl = document.getElementById("blockedMessage");
+if(blockedMessageEl){
+  blockedMessageEl.addEventListener("click",function() {
+    const wf = document.getElementById("welcomeForm");
+    const bm = document.getElementById("blockedMessage");
+    if(wf) wf.style.display="block";
+    if(bm) bm.style.display="none";
+  });
+}
+
+/* ============================
+   Sections dropdown navigation
+   ============================ */
+btnSections && btnSections.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(!sectionsPanel) return;
+  sectionsPanel.classList.contains('hidden') ? show(sectionsPanel) : hide(sectionsPanel);
+});
+document.addEventListener('click', ()=> { if(sectionsPanel && !sectionsPanel.classList.contains('hidden')) hide(sectionsPanel); });
+secLinks.forEach(a=>{
+  a.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    const target = a.getAttribute('href') || '#';
+    if(sectionsPanel) hide(sectionsPanel);
+    if(target && document.querySelector(target)){
+      document.querySelector(target).scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
+
+/* ============================
+  /* ============================
+   Settings (save & restore)
+   ============================ */
+(function loadSettings(){
+  const s = readFromLS(LS_SETTINGS);
+  if(s){ 
+    if(optDelay) optDelay.value = s.delay || 1100; 
+    if(optEffect) optEffect.value = s.effect || 'zoom'; 
+  }
+})();
+/* ============================
+   Helpers: get settings
+   ============================ */
+function getCurrentSettings(){
+  const s = readFromLS(LS_SETTINGS) || {};
+  return {
+    delay: Number(s.delay) || 1100,
+    effect: s.effect || 'zoom'
+  };
+}
+
+/* ============================
+   Save settings
+   ============================ */
+   btnSaveSettings && btnSaveSettings.addEventListener('click', () => {
+  const delayVal = optDelay ? Number(optDelay.value) || 1100 : 1100;
+  let raw = optEffect ? optEffect.value : 'zoom';
+  raw = raw.trim().toLowerCase();
+  const effectVal = ['zoom','fade','slide','blur','spin','flip3d','scalex','scaley','bounce','rotate3d','shutter'].includes(raw) ? raw : 'zoom';
+
+  saveToLS(LS_SETTINGS, { delay: delayVal, effect: effectVal, audio: selectedAudioSrc });
+
+  if(isPlaying){
+    clearTimeout(window.__revealTimer);
+    revealNext();
+  };
+  //Create message will show after save setting is clicked
+   const messageEl = document.createElement('span');
+  messageEl.textContent = '! Settings have been saved';
+  Object.assign(messageEl.style, {
+    position: 'absolute',
+    top: '-30px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    fontSize: '12px',
+    color: 'black',
+    background: 'white',
+    border: '1px solid #ccc',
+    padding: '2px 6px',
+    borderRadius: '4px',
+    whiteSpace: 'nowrap',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+    display: 'inline-block',
+    zIndex: 1000
+  });
+
+  btnSaveSettings.parentElement.style.position = 'relative'; 
+  btnSaveSettings.parentElement.appendChild(messageEl);
+
+  setTimeout(() => {
+    messageEl.remove();
+  }, 2000);
+});
+
+
+/* ============================
+   Reset settings
+   ============================ */
+btnResetSettings && btnResetSettings.addEventListener('click', ()=>{
+  if(optDelay) optDelay.value = 1100; 
+  if(optEffect) optEffect.value = 'zoom';
+  saveToLS(LS_SETTINGS, {delay:1100,effect:'zoom'});
+
+  if(isPlaying){
+    clearTimeout(window.__revealTimer);
+    revealNext();
+  }
+
+const messageEl = document.createElement('span');
+  messageEl.textContent = '! Default settings restored';
+  Object.assign(messageEl.style, {
+    position: 'absolute',
+    top: '-30px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    fontSize: '12px',
+    color: 'black',
+    background: 'white',
+    border: '1px solid #ccc',
+    padding: '2px 6px',
+    borderRadius: '4px',
+    whiteSpace: 'nowrap',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+    display: 'inline-block',
+    zIndex: 1000
+  });
+
+  btnResetSettings.parentElement.style.position = 'relative';
+  btnResetSettings.parentElement.appendChild(messageEl);
+
+  setTimeout(() => {
+    messageEl.remove();
+  }, 2000);
+
+});
+
+/* ============================
+   Start playback
+   ============================ */
+   function startPlayback(loop = false){
+  clearTimeout(window.__revealTimer);
+
+  isLoopMode = loop;
+  playIndex = 0;
+  isPlaying = true;
+  isPaused = false;
+
+  // Play audio if a file is selected
+if(selectedAudioSrc){
+  audioPlayer.play().catch(e => console.log("Audio playback issue:", e));
+}
+
+  const floatingControls = document.getElementById("floatingControls");
+  if(floatingControls) floatingControls.classList.add("active");
+
+  revealNext();
+
+  btnStart && (btnStart.disabled = true);
+  btnPause && (btnPause.disabled = false);
+  if(btnResume) btnResume.classList.add('hidden');
+  statusEl && (statusEl.textContent = 'Displaying');
+}
+
+
+
+/* ============================
+   IndexedDB
+   ============================ */
+let db;
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const request = indexedDB.open('elkDB',1);
+    request.onupgradeneeded = e => {
+      db = e.target.result;
+      if(!db.objectStoreNames.contains('images')){
+        db.createObjectStore('images',{keyPath:'id',autoIncrement:true});
+      }
+    };
+    request.onsuccess = e => { db = e.target.result; resolve(db); };
+    request.onerror = e => reject(e);
+  });
+}
+
+function saveImageToDB(blob){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('images','readwrite');
+    const store = tx.objectStore('images');
+    const req = store.add({blob, at:new Date().toISOString()});
+    req.onsuccess = ()=> resolve(true);
+    req.onerror = ()=> reject(false);
+  });
+}
+
+function getAllImagesFromDB(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('images','readonly');
+    const store = tx.objectStore('images');
+    const req = store.getAll();
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e);
+  });
+}
+
+function clearAllImagesFromDB(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('images','readwrite');
+    const store = tx.objectStore('images');
+    const req = store.clear();
+    req.onsuccess = ()=> resolve(true);
+    req.onerror = ()=> reject(false);
+  });
+}
+
+/* ============================
+   File upload & preview
+   ============================ */
+fileInput && fileInput.addEventListener('change', ()=>{
+  const files = Array.from(fileInput.files || []);
+  preview && (preview.innerHTML = '');
+  if(files.length===0){
+    if(preview) preview.innerHTML='<div class="muted tiny">لا توجد ملفات</div>';
+    return;
+  }
+  files.slice(0,12).forEach(f=>{
+    const url = URL.createObjectURL(f);
+    const img = document.createElement('img');
+    img.src = url; img.alt = f.name;
+    if(preview) preview.appendChild(img);
+    img.onload = ()=> URL.revokeObjectURL(url);
+  });
+});
+
+/* ============================
+   Save images (compressed)
+   ============================ */
+btnSaveImgs && btnSaveImgs.addEventListener('click', async () => {
+  const files = Array.from(fileInput.files || []);
+  if(!files.length){ 
+  alert('Please select at least one image'); 
+  return; 
+}
+  await openDB();
+
+  const compressImage = (file, quality=0.5, maxWidth=800) => new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(maxWidth/img.width,1);
+        canvas.width = img.width*scale;
+        canvas.height = img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        canvas.toBlob(blob=>resolve(blob),'image/jpeg',quality);
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+
+  const results=[];
+  for(const f of files){
+    try{
+      if(!f.type.startsWith('image/')) throw 'not_image';
+      const blob = await compressImage(f);
+      await saveImageToDB(blob);
+      results.push(f.name);
+    }catch(e){ console.warn('Failed to save:', f.name, e); }
+  }
+
+  fileInput.value='';
+  if(preview) preview.innerHTML='';
+  renderMasonry();
+
+  if(welcomeEl){
+    welcomeEl.textContent = `Saved ${results.length} image${results.length > 1 ? 's' : ''} locally`;
+    showTemp(welcomeEl,1200);
+  }
+});
+
+/* ============================
+   Clear images
+   ============================ */
+btnClearImgs && btnClearImgs.addEventListener('click', async ()=>{
+  if(!confirm('All locally stored images will be deleted. Continue?')) return;
+  await openDB();
+  await clearAllImagesFromDB();
+  renderMasonry();
+  alert('Images have been cleared');
+});
+
+/* ============================
+   Render masonry
+   ============================ */
+async function renderMasonry(){
+  if(!masonry) return;
+  masonry.innerHTML='';
+  await openDB();
+  const all = await getAllImagesFromDB();
+  all.forEach((item,idx)=>{
+    const wrap = document.createElement('div');
+    wrap.className='masonry-item';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(item.blob);
+    img.alt = `Image ${idx + 1}`;;
+    wrap.appendChild(img);
+    masonry.appendChild(wrap);
+  });
+}
+
+/* ============================
+   Fullscreen overlay (fixed)
+   ============================ */
+let fullscreenOverlay = null;
+let fsImg = null;
+
+function createFullscreenOverlay(){
+  if(fullscreenOverlay) return;
+
+  fullscreenOverlay = document.createElement('div');
+  fullscreenOverlay.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity .4s ease;
+  `;
+
+  fsImg = document.createElement('img');
+  fsImg.style.cssText = `
+    max-width: 90%;
+    max-height: 90%;
+    display: block;
+    opacity: 0;
+    transform: scale(1);
+    transition: opacity .6s ease, transform .6s ease;
+  `;
+
+  fullscreenOverlay.appendChild(fsImg);
+  document.body.appendChild(fullscreenOverlay);
+}
+
+function showFullscreen(src, effect, onComplete){
+  createFullscreenOverlay();
+
+  fsImg.src = src;
+
+// Full RESET
+fsImg.className = '';
+fsImg.style.transition = 'none';
+fsImg.style.transform = '';
+fsImg.style.filter = '';
+fsImg.style.animation = 'none';
+fsImg.style.opacity = '0';
+
+fullscreenOverlay.style.display = 'flex';
+fullscreenOverlay.style.opacity = '1';
+
+  fsImg.onload = () => {
+    switch(effect){
+  case 'zoom':
+  fsImg.style.transition = 'none';
+  fsImg.style.transform = 'scale(0.6)';
+    requestAnimationFrame(() => {
+     requestAnimationFrame(() => {
+          fsImg.style.transition = 'transform 1s ease, opacity 1s ease';
+          fsImg.style.opacity = '1';
+          fsImg.style.transform = 'scale(1)';
+      });
+    });
+    break;
+
+  case 'slide':
+   // Slide from right effect
+   fsImg.style.transition = 'none';
+      fsImg.style.transform = 'translateX(100px)';
+      fsImg.style.opacity = '0';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          fsImg.style.transition = 'transform 1s ease, opacity 1s ease';
+          fsImg.style.transform = 'translateX(0)';
+          fsImg.style.opacity = '1';
+        });
+      });
+    break;
+
+    case 'blur':
+  fsImg.style.transition = 'none';
+  fsImg.style.filter = 'blur(15px)';
+  fsImg.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fsImg.style.transition = 'filter 1s ease, opacity 1s ease';
+      fsImg.style.filter = 'blur(0px)';
+      fsImg.style.opacity = '1';
+    });
+  });
+break;
+
+case 'spin':
+  fsImg.style.transition = 'none';
+  fsImg.style.transform = 'rotate(-360deg) scale(0.3)';
+  fsImg.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fsImg.style.transition = 'transform 1.2s ease, opacity 1s ease';
+      fsImg.style.transform = 'rotate(0deg) scale(1)';
+      fsImg.style.opacity = '1';
+    });
+  });
+
+break;
+
+case 'flip3d':
+  fsImg.style.transition = 'none';
+  fsImg.style.transform = 'rotateY(180deg) perspective(1000px)';
+  fsImg.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fsImg.style.transition = 'transform 1.1s ease, opacity 0.8s ease';
+      fsImg.style.transform = 'rotateY(0deg) scale(1)';
+      fsImg.style.opacity = '1';
+    });
+  });
+break;
+case 'scalex':
+  fsImg.style.transition = 'none';
+  fsImg.style.transform = 'scaleX(0)';
+  fsImg.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fsImg.style.transition = 'transform 1s ease, opacity .6s ease';
+      fsImg.style.transform = 'scaleX(1)';
+      fsImg.style.opacity = '1';
+    });
+  });
+break;
+
+case 'scaley':
+  fsImg.style.transition = 'none';
+  fsImg.style.transform = 'scaleY(0)';
+  fsImg.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fsImg.style.transition = 'transform 1s ease, opacity .6s ease';
+      fsImg.style.transform = 'scaleY(1)';
+      fsImg.style.opacity = '1';
+    });
+  });
+break;
+
+case 'bounce':
+  fsImg.style.opacity = '0';
+  fsImg.style.transform = 'scale(0.6)';
+  fsImg.style.animation = 'none';
+
+  fsImg.offsetHeight; // ⭐ Very Important
+
+  fsImg.style.opacity = '1';
+  fsImg.style.animation = 'bounceIn 1.1s ease forwards';
+break;
+case 'rotate3d':
+  fsImg.style.opacity = '0';
+  fsImg.style.transform = 'perspective(1000px) rotateY(90deg)';
+  fsImg.style.animation = 'none';
+
+  fsImg.offsetHeight; // 🔥 force reflow
+
+  fsImg.style.opacity = '1';
+  fsImg.style.animation = 'rotate3dIn 1.1s ease forwards';
+break;
+
+case 'shutter':
+  fsImg.style.opacity = '1';
+  fsImg.style.transform = 'scaleY(0)';
+  fsImg.style.transformOrigin = 'center';
+  fsImg.style.animation = 'none';
+
+  fsImg.offsetHeight; // 🔥 Very Important
+
+  fsImg.style.animation = 'shutterOpen 1s ease forwards';
+break;
+
+case 'fade':
+  fsImg.style.transition = 'opacity 1s ease';
+  fsImg.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fsImg.style.opacity = '1';
+    });
+  });
+break;
+}
+
+
+    // Wait until animation ends then callback
+const duration = effect === 'spin' ? getCurrentSettings().delay : 1000; // 1 second per slide
+  };
+}
+
+
+function hideFullscreen(){
+  if(!fullscreenOverlay) return;
+
+  fullscreenOverlay.style.opacity = '0';
+  fsImg.style.opacity = '0';
+
+  setTimeout(() => {
+    fullscreenOverlay.style.display = 'none';
+    fsImg.src = '';
+    fsImg.className = '';
+  }, 400);
+}
+
+
+/* ============================
+   revealNext (correct timing)
+   ============================ */
+function revealNext(){
+  const items = Array.from(masonry.querySelectorAll('.masonry-item'));
+
+  if(playIndex >= items.length){
+  if(isLoopMode){
+     playIndex = 0;      // 🔁 Return to the first image
+  }else{
+    stopPlayback(true);
+    return;
+  }
+}
+
+
+  const cur = items[playIndex];
+  const img = cur.querySelector('img');
+
+  if(!img){
+    playIndex++;
+    return revealNext();
+  }
+
+  const { effect, delay } = getCurrentSettings();
+
+  showFullscreen(img.src, effect, () => {
+    if (!isPaused && isPlaying) {
+    revealNext();
+  }
+});
+
+
+  playIndex++;
+
+  clearTimeout(window.__revealTimer);
+  window.__revealTimer = setTimeout(() => {
+    if(!isPaused) revealNext();
+  }, delay);
+}
+
+
+/* ============================
+   stop / pause / resume
+   ============================ */
+   function stopPlayback(finished = false){
+  clearTimeout(window.__revealTimer);
+
+  isPlaying = false;
+  isPaused = false;
+  playIndex = 0;
+
+  statusEl && (statusEl.textContent = finished ? 'Slideshow ended' : 'Ready');
+
+  btnStart && (btnStart.disabled = false);
+  btnPause && (btnPause.disabled = true);
+  btnResume && btnResume.classList.add('hidden');
+
+  hideFullscreen();
+
+  const floatingControls = document.getElementById("floatingControls");
+  if(floatingControls) floatingControls.classList.remove("active");
+
+  // ✅ Stop audio only when the slideshow ends
+  if(finished && audioPlayer){
+  audioPlayer.pause();
+  audioPlayer.currentTime = 0;
+}
+
+}
+
+
+
+function pausePlayback(){
+  if(!isPlaying) return;
+
+  isPaused = true;
+
+ // ⏸ Pause audio
+  if(audioPlayer && !audioPlayer.paused){
+    audioPlayer.pause();
+  }
+
+  statusEl && (statusEl.textContent = 'Paused');
+  btnPause && (btnPause.disabled = true);
+  btnResume && btnResume.classList.remove('hidden');
+}
+
+
+function resumePlayback(){
+  if(!isPlaying && playIndex < masonry.querySelectorAll('.masonry-item').length){
+    isPlaying = true;
+  }
+
+  if(!isPlaying) return;
+
+  isPaused = false;
+
+  // ▶️ Resume audio from the same point
+  if(audioPlayer && audioPlayer.paused){
+    audioPlayer.play().catch(()=>{});
+  }
+
+  statusEl && (statusEl.textContent = 'Displaying');
+  btnPause && (btnPause.disabled = false);
+  btnResume && btnResume.classList.add('hidden');
+
+  clearTimeout(window.__revealTimer);
+  revealNext();
+}
+
+
+
+btnStart && btnStart.addEventListener('click', startPlayback);
+btnPause && btnPause.addEventListener('click', pausePlayback);
+btnResume && btnResume.addEventListener('click', resumePlayback);
+
+
+/* ============================
+   Feedback flow
+   ============================ */
+function showFeedbackBox(){ if(!feedbackBox) return; show(feedbackBox); feedbackInput && feedbackInput.focus(); window.scrollTo({top:0,behavior:'smooth'}); }
+btnSendFeedback && btnSendFeedback.addEventListener('click', ()=>{
+  const txt=(feedbackInput && feedbackInput.value || '').trim();
+  const user=readFromLS(LS_USER)||{name:'Guest',email:''};
+  saveToLS('elk_feedback',(readFromLS('elk_feedback')||[]).concat({user:user.name||'Guest',email:user.email||'',feedback:txt,at:new Date().toISOString()}));
+  hide(feedbackBox);
+  farewellText && (farewellText.textContent='Thank you for your feedback! It has been saved successfully');
+  show(overlayFarewell);
+});
+btnSkipFeedback && btnSkipFeedback.addEventListener('click', ()=>{ hide(feedbackBox); show(overlayFarewell); });
+farewellOk && farewellOk.addEventListener('click', ()=> hide(overlayFarewell));
+
+/* ============================
+   Confirmation overlay
+   ============================ */
+function openConfirm(message, onYes){
+  if(!overlayConfirm || !confirmText || !confirmYes || !confirmNo) return;
+  confirmText.textContent = message;
+  show(overlayConfirm);
+  const yesHandler = ()=>{
+    if(onYes) onYes();
+    confirmYes.removeEventListener('click', yesHandler);
+  };
+  confirmYes.addEventListener('click', yesHandler);
+  confirmNo.addEventListener('click', ()=>{ hide(overlayConfirm); });
+}
+
+/* ============================
+   Video overlay
+   ============================ */
+playVideo && playVideo.addEventListener('click', ()=>{
+  if(!overlayVideo || !promoVideo) return;
+  show(overlayVideo);
+  promoVideo.play();
+});
+closeVideo && closeVideo.addEventListener('click', ()=>{
+  if(!overlayVideo || !promoVideo) return;
+  hide(overlayVideo);
+  promoVideo.pause();
+  promoVideo.currentTime=0;
+});
+
+/* ============================
+   Contact message
+   ============================ */
+// حدث الضغط على زر الإرسال
+  btnContactSend && btnContactSend.addEventListener('click', () => {
+    const msg = (contactMsg && contactMsg.value || '').trim();
+
+    // التأكد أن المستخدم كتب رسالة
+    if (!msg) {
+      alert('Please enter a message first');
+      return;
+    }
+
+    // إرسال الرسالة باستخدام EmailJS
+    emailjs.send('service_shwc2zn', 'template_k1gkypk', { message: msg })
+      .then(() => {
+        alert('Message sent successfully');
+        if(contactMsg) contactMsg.value = '';
+      })
+      .catch(() => {
+        alert('Failed to send message');
+      });
+  });
+
+/* ============================
+   Scroll to top button
+   ============================ */
+window.addEventListener('scroll', ()=>{ toTop && (toTop.style.display = window.scrollY>300 ? 'block' : 'none'); });
+toTop && toTop.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ============================
+   Initial render
+   ============================ */
+window.addEventListener('load', async ()=>{
+  await openDB();
+  renderMasonry();
+});
+
+/* Link buttons to existing functions */
+document.getElementById("fcPause").onclick = () => {
+  if (typeof pausePlayback === "function") pausePlayback();
+};
+
+document.getElementById("fcResume").onclick = () => {
+  if (typeof resumePlayback === "function") resumePlayback();
+};
+
+document.getElementById("fcStop").onclick = () => {
+  if (typeof stopPlayback === "function") stopPlayback(true);
+};
+
+const floatingControls = document.getElementById("floatingControls");
+// When the slideshow starts → show buttons
+btnStart.addEventListener("click", () => {
+  floatingControls.classList.add("active");
+});
+
+
+document.getElementById('playVideo').addEventListener('click', function (e) {
+  e.stopPropagation(); // 🔴 Important: Prevents any bubbling from the button itself
+
+  const videoSrc = this.dataset.video;
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  `;
+
+ /* Back button */
+  const backBtn = document.createElement('button');
+  backBtn.innerHTML = '⌂ Home';
+  backBtn.style.cssText = `
+    position:fixed;
+    top:18px;
+    right:18px;
+    padding:8px 14px;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    background:#fff;
+    color:#000;
+    font-size:13px;
+    z-index:10000;
+    transition:.3s;
+  `;
+
+  backBtn.onmouseenter = () => backBtn.style.transform = 'scale(1.05)';
+  backBtn.onmouseleave = () => backBtn.style.transform = 'scale(1)';
+
+  backBtn.onclick = (ev) => {
+    ev.stopPropagation();   // 🔴 This is the core of the solution
+    video.pause();
+    overlay.remove();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const video = document.createElement('video');
+  video.src = videoSrc;
+  video.controls = true;
+  video.autoplay = true;
+  video.style.cssText = `
+    max-width:90%;
+    max-height:80%;
+    border-radius:16px;
+    box-shadow:0 20px 40px rgba(0,0,0,.6);
+  `;
+
+  overlay.appendChild(video);
+  overlay.appendChild(backBtn);
+  document.body.appendChild(overlay);
+
+  /* Prevent any clicks inside the content */
+  video.addEventListener('click', ev => ev.stopPropagation());
+
+  /* Close only when clicking outside the content */
+  overlay.addEventListener('click', () => {
+    video.pause();
+    overlay.remove();
+  });
+});
+
+btnStart.addEventListener('click', () => startPlayback(false)); // Display once
+
+document.getElementById("btnStartLoop").addEventListener('click', () => {
+  startPlayback(true); // Continuous display
+});
+
+// Footer show
+const dateSpan = document.getElementById('currentDate');
+  const today = new Date();
+
+  const day = today.getDate(); // Day
+  const month = today.getMonth() + 1; // Month (zero-based, so +1)
+  const year = today.getFullYear(); // Year
+
+  dateSpan.textContent = `${month}/${day}/${year}`;
+
+// On page load, add the class to activate the animation
+  window.addEventListener('scroll', () => {
+    const about = document.getElementById('about');
+    const rect = about.getBoundingClientRect();
+    if(rect.top < window.innerHeight - 100) {
+      about.classList.add('show');
+    }
+  });
+
+// =========================
+// Info about the Owner
+// =========================
+// Name: Malak Shafek
+// Email: malakshafek88@gmail.com
+// Role: Full Stack Web Developer & Crypto Investor
+// Location: 20 E 29th Bayonne, NJ 07002, USA
+// Quote: "Sharing memories & art in a luxurious experience."
+// =========================
+
+</script>
+</div>
+</body>
+</html>
