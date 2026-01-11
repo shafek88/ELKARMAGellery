@@ -1072,6 +1072,26 @@ const btnContactSend = document.getElementById('btnContactSend');
 
 const toTop = document.getElementById('toTop');
 
+// ============================
+// Wake Lock (keep screen on)
+// ============================
+let wakeLock = null;
+
+async function keepScreenOn() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Screen Wake Lock is active');
+  } catch (err) {
+    console.warn('Wake Lock failed:', err);
+  }
+}
+
+// يشغل عند أول نقرة من المستخدم
+document.addEventListener('click', () => {
+  keepScreenOn();
+}, { once: true });
+
+
 let isLoopMode = false;
 
 // Keep only these two functions
@@ -1528,6 +1548,7 @@ async function renderMasonry(){
     wrap.className='masonry-item';
     const img = document.createElement('img');
     img.src = URL.createObjectURL(item.blob);
+    img.loading = 'lazy';
     img.alt = `Image ${idx + 1}`;;
     wrap.appendChild(img);
     masonry.appendChild(wrap);
