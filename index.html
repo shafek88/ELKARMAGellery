@@ -1094,7 +1094,6 @@ const btnContactSend = document.getElementById('btnContactSend');
 
 const toTop = document.getElementById('toTop');
 
-
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 fullscreenBtn && fullscreenBtn.addEventListener("click", () => {
@@ -1156,18 +1155,30 @@ function setupFloatingControls() {
 let wakeLock = null;
 
 async function keepScreenOn() {
+  if (!("wakeLock" in navigator)) return;
+
   try {
-    wakeLock = await navigator.wakeLock.request('screen');
-    console.log('Screen Wake Lock is active');
-  } catch (err) {
-    console.warn('Wake Lock failed:', err);
+    wakeLock = await navigator.wakeLock.request("screen");
+    console.log("Wake Lock ON");
+  } catch (e) {
+    console.warn(e);
   }
 }
 
-// يشغل عند أول نقرة من المستخدم
-document.addEventListener('click', () => {
-  keepScreenOn();
-}, { once: true });
+document.addEventListener("click", keepScreenOn, { once: true });
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    keepScreenOn();
+  }
+});
+
+document.addEventListener("fullscreenchange", () => {
+  if (document.fullscreenElement) {
+    keepScreenOn();
+  }
+});
+
 
 
 let isLoopMode = false;
@@ -1738,7 +1749,7 @@ fsImg.style.opacity = '0';
 
 fullscreenOverlay.style.display = 'flex';
 fullscreenOverlay.style.opacity = '1';
-
+keepScreenOn();
   fsImg.onload = () => {
     switch(effect){
   case 'zoom':
