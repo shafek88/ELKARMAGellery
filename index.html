@@ -652,21 +652,12 @@ img.effect-shutter {
 
 #fullscreenBtn {
   position: fixed;
-  bottom: 12px;
-  right: 12px;
-  background: rgba(0,0,0,0.65);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.25);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  z-index: 99999;
-
+  bottom: 20px;
+  right: 20px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.4s ease;
+  z-index: 99999;
 }
 
 #fullscreenBtn.active {
@@ -1016,9 +1007,9 @@ img.effect-shutter {
 
   <!-- ===== Floating Controls ===== -->
   <div id="floatingControls">
-    <button id="fcPause">Pause</button>
-    <button id="fcResume">Resume</button>
-    <button id="fcStop">Stop</button>
+    <button id="fcPause" aria-label="Pause">⏸</button>
+    <button id="fcResume" aria-label="Play">▶</button>
+   <button id="fcStop" aria-label="Stop">⏹</button>
 </div>
 
 <button id="fullscreenBtn">⛶</button>
@@ -1119,36 +1110,42 @@ fullscreenBtn && fullscreenBtn.addEventListener("click", () => {
 let controlsHideTimer = null;
 let allowFloatingControls = false;
 
-
-
 function setupFloatingControls() {
   const floatingControls = document.getElementById("floatingControls");
   if (!floatingControls) return;
 
-  // تبدأ مختفية
-  floatingControls.classList.remove("active");
+  // 🔹 إظهار فورًا مع التشغيل
+  if (allowFloatingControls && isPlaying) {
+    floatingControls.classList.add("active");
+    fullscreenBtn.classList.add("active");
+  }
 
-  // 🔹 مؤقت الاختفاء من البداية
+  // 🔹 إخفاء تلقائي بعد ثواني (حتى لو الماوس ما اتحركش)
   clearTimeout(controlsHideTimer);
   controlsHideTimer = setTimeout(() => {
     if (allowFloatingControls && isPlaying && !isPaused) {
       floatingControls.classList.remove("active");
+      fullscreenBtn.classList.remove("active");
     }
   }, 2000);
 
+
   // 🔹 إظهار عند أي حركة ماوس
   document.addEventListener("mousemove", () => {
-    if (!allowFloatingControls || !isPlaying) return;
+  if (!allowFloatingControls || !isPlaying) return;
 
-    floatingControls.classList.add("active");
+  floatingControls.classList.add("active");
+  fullscreenBtn.classList.add("active");
 
-    clearTimeout(controlsHideTimer);
-    controlsHideTimer = setTimeout(() => {
-      if (allowFloatingControls && isPlaying && !isPaused) {
-        floatingControls.classList.remove("active");
-      }
-    }, 2000);
-  });
+  clearTimeout(controlsHideTimer);
+  controlsHideTimer = setTimeout(() => {
+    if (allowFloatingControls && isPlaying && !isPaused) {
+      floatingControls.classList.remove("active");
+      fullscreenBtn.classList.remove("active");
+    }
+  }, 2000);
+});
+
 }
 
 
