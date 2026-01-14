@@ -644,18 +644,47 @@ img.effect-shutter {
     font-size: 13px;  /* Reduce text size */
   }
 
-  /* floating controls */
-  #floatingControls {
-    bottom: 12px;
-    left: 12px;
-    gap: 6px;
-  }
-
   #floatingControls button {
     padding: 5px 8px;
     font-size: 11px;
   }
 }
+
+#fullscreenBtn {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  z-index: 99999;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#fullscreenBtn.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+.lazy-img{
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.lazy-img.loaded{
+  opacity: 1;
+}
+
+
+
 /* ===== Responsive header and menu ===== */
 @media (max-width:980px){
   .header{
@@ -992,6 +1021,8 @@ img.effect-shutter {
     <button id="fcStop">Stop</button>
 </div>
 
+<button id="fullscreenBtn">⛶</button>
+
   <!-- Overlays -->
   <div id="overlayConfirm" class="overlay hidden">
     <div class="modal">
@@ -1071,6 +1102,56 @@ const contactMsg = document.getElementById('contactMsg');
 const btnContactSend = document.getElementById('btnContactSend');
 
 const toTop = document.getElementById('toTop');
+
+
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+fullscreenBtn && fullscreenBtn.addEventListener("click", () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+});
+
+
+
+let controlsHideTimer = null;
+let allowFloatingControls = false;
+
+
+
+function setupFloatingControls() {
+  const floatingControls = document.getElementById("floatingControls");
+  if (!floatingControls) return;
+
+  // تبدأ مختفية
+  floatingControls.classList.remove("active");
+
+  // 🔹 مؤقت الاختفاء من البداية
+  clearTimeout(controlsHideTimer);
+  controlsHideTimer = setTimeout(() => {
+    if (allowFloatingControls && isPlaying && !isPaused) {
+      floatingControls.classList.remove("active");
+    }
+  }, 2000);
+
+  // 🔹 إظهار عند أي حركة ماوس
+  document.addEventListener("mousemove", () => {
+    if (!allowFloatingControls || !isPlaying) return;
+
+    floatingControls.classList.add("active");
+
+    clearTimeout(controlsHideTimer);
+    controlsHideTimer = setTimeout(() => {
+      if (allowFloatingControls && isPlaying && !isPaused) {
+        floatingControls.classList.remove("active");
+      }
+    }, 2000);
+  });
+}
+
+
 
 // ============================
 // Wake Lock (keep screen on)
@@ -1345,11 +1426,17 @@ const messageEl = document.createElement('span');
    ============================ */
    function startPlayback(loop = false){
   clearTimeout(window.__revealTimer);
-
+  
+  allowFloatingControls = true;
   isLoopMode = loop;
   playIndex = 0;
   isPlaying = true;
   isPaused = false;
+  allowFloatingControls = true;
+  setupFloatingControls(); // 🔹 تشغيل المؤقت + الاستماع للماوس
+
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  fullscreenBtn && fullscreenBtn.classList.add("active");
 
   // Play audio if a file is selected
 if(selectedAudioSrc){
@@ -1358,6 +1445,18 @@ if(selectedAudioSrc){
 
   const floatingControls = document.getElementById("floatingControls");
   if(floatingControls) floatingControls.classList.add("active");
+
+  // ✅ تأكيد تحميل كل الصور قبل بدء العرض
+const imgs = masonry.querySelectorAll('.masonry-item img');
+imgs.forEach(img => {
+  if (!img.src && img.dataset.fullsrc) {
+    img.src = img.dataset.fullsrc;
+  }
+});
+
+// 🔹 إخفاء Scrollbar عند بدء العرض
+document.body.style.overflow = 'hidden';
+document.documentElement.style.overflow = 'hidden';
 
   revealNext();
 
@@ -1540,20 +1639,56 @@ btnClearImgs && btnClearImgs.addEventListener('click', async ()=>{
    ============================ */
 async function renderMasonry(){
   if(!masonry) return;
-  masonry.innerHTML='';
+
+  masonry.innerHTML = '';
   await openDB();
   const all = await getAllImagesFromDB();
-  all.forEach((item,idx)=>{
+
+  all.forEach((item, idx) => {
     const wrap = document.createElement('div');
-    wrap.className='masonry-item';
+    wrap.className = 'masonry-item';
+
     const img = document.createElement('img');
-    img.src = URL.createObjectURL(item.blob);
-    img.loading = 'lazy';
-    img.alt = `Image ${idx + 1}`;;
+
+    const url = URL.createObjectURL(item.blob);
+
+    // ❌ Masonry Grid لازم يظهر فورًا
+    img.src = url;
+
+    // ✅ خزّن للرؤية الكاملة / Slideshow
+    img.dataset.fullsrc = url;
+
+    img.alt = `Image ${idx + 1}`;
+    img.className = 'masonry-img'; // بدل lazy-img
+
     wrap.appendChild(img);
     masonry.appendChild(wrap);
   });
 }
+
+
+function initLazyImages(){
+  const images = document.querySelectorAll('.lazy-img');
+
+  const observer = new IntersectionObserver((entries, observer)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const img = entry.target;
+
+        if(!img.src){
+          img.src = img.dataset.src;
+        }
+
+        observer.unobserve(img);
+      }
+    });
+  },{
+    rootMargin: '300px'
+  });
+
+  images.forEach(img => observer.observe(img));
+}
+
 
 /* ============================
    Fullscreen overlay (fixed)
@@ -1822,6 +1957,9 @@ function revealNext(){
   isPaused = false;
   playIndex = 0;
 
+ const fullscreenBtn = document.getElementById("fullscreenBtn");
+ fullscreenBtn && fullscreenBtn.classList.remove("active");
+
   statusEl && (statusEl.textContent = finished ? 'Slideshow ended' : 'Ready');
 
   btnStart && (btnStart.disabled = false);
@@ -1833,11 +1971,22 @@ function revealNext(){
   const floatingControls = document.getElementById("floatingControls");
   if(floatingControls) floatingControls.classList.remove("active");
 
+  // 🔹 إظهار Scrollbar مرة تانية بعد انتهاء العرض
+document.body.style.overflow = '';
+document.documentElement.style.overflow = '';
+
+
   // ✅ Stop audio only when the slideshow ends
   if(finished && audioPlayer){
   audioPlayer.pause();
   audioPlayer.currentTime = 0;
 }
+
+// 🔽 الخروج من وضع Fullscreen عند نهاية العرض
+if (document.fullscreenElement) {
+  document.exitFullscreen().catch(() => {});
+}
+
 
 }
 
@@ -1847,6 +1996,9 @@ function pausePlayback(){
   if(!isPlaying) return;
 
   isPaused = true;
+
+  const floatingControls = document.getElementById("floatingControls");
+ if (floatingControls) floatingControls.classList.add("active");
 
  // ⏸ Pause audio
   if(audioPlayer && !audioPlayer.paused){
