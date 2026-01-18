@@ -3,7 +3,16 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ELKARMAGellery — Luxury Showcase</title>
+
+<title>ELKARMA Gallery | Luxury Photo Slideshow & Visual Showcase</title>
+
+<meta name="description" content="ELKARMA Gallery is a luxury visual showcase for photo slideshows, fullscreen image presentation, and cinematic viewing experience across all devices." />
+<meta name="keywords" content="photo gallery, slideshow, fullscreen images, luxury gallery, image presentation" />
+
+<meta property="og:title" content="ELKARMA Gallery — Luxury Slideshow Experience" />
+<meta property="og:description" content="A cinematic photo gallery with fullscreen slideshow and smooth visual effects." />
+<meta property="og:type" content="website" />
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -1524,35 +1533,37 @@ function clearAllImagesFromDB(){
   });
 }
 
+//help saving
+async function saveImagesBatch(blobs) {
+  const tx = db.transaction('images', 'readwrite');
+  const store = tx.objectStore('images');
+
+  for (const blob of blobs) {
+    store.add({ blob, at: Date.now() });
+  }
+
+  return new Promise(res => (tx.oncomplete = res));
+}
+
 /* ============================
    Compress imges
    ============================ */
-function compressImage(file, maxWidth = 1280, quality = 0.75) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    const reader = new FileReader();
+async function compressImageFast(file, maxWidth = 1280, quality = 0.75) {
+  const bitmap = await createImageBitmap(file);
 
-    reader.onload = e => img.src = e.target.result;
-    reader.readAsDataURL(file);
+  const scale = Math.min(1, maxWidth / bitmap.width);
+  const canvas = document.createElement('canvas');
+  canvas.width = bitmap.width * scale;
+  canvas.height = bitmap.height * scale;
 
-    img.onload = () => {
-      const scale = Math.min(1, maxWidth / img.width);
-      const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
 
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob(
-        blob => resolve(blob),
-        'image/jpeg',
-        quality
-      );
-    };
-  });
+  return new Promise(resolve =>
+    canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality)
+  );
 }
+
 
 /* ============================
    File upload & preview
