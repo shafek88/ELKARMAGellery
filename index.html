@@ -1442,39 +1442,57 @@ const messageEl = document.createElement('span');
    Start playback
    ============================ */
    function startPlayback(loop = false){
-  clearTimeout(window.__revealTimer);
+  // 🔹 تحقق من وجود صور
+  const imgs = masonry.querySelectorAll('.masonry-item img');
+  const hasValidImg = Array.from(imgs).some(img => img.src || img.dataset.fullsrc);
   
+  if(!hasValidImg){
+    alert("No images found. Please upload at least one image to start the slideshow.");
+    
+    // 🔹 إخفاء أي أزرار عائمة ظهرت سابقًا
+    const floatingControls = document.getElementById("floatingControls");
+    floatingControls && floatingControls.classList.remove("active");
+    
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    fullscreenBtn && fullscreenBtn.classList.remove("active");
+    
+    return; // ❌ توقف نهائي
+  }
+
+  // 🔹 تأكيد تحميل الصور قبل العرض
+  imgs.forEach(img => {
+    if (!img.src && img.dataset.fullsrc) {
+      img.src = img.dataset.fullsrc;
+    }
+  });
+
+  clearTimeout(window.__revealTimer);
+
+  // 🔹 إعداد التحكم العائم + المؤشر
   allowFloatingControls = true;
   isLoopMode = loop;
   playIndex = 0;
   isPlaying = true;
   isPaused = false;
-  allowFloatingControls = true;
-  setupFloatingControls(); // 🔹 تشغيل المؤقت + الاستماع للماوس
+  setupFloatingControls(); // تشغيل المؤقت + الاستماع للماوس
 
+  // 🔹 أزرار التحكم تظهر الآن فقط
   const fullscreenBtn = document.getElementById("fullscreenBtn");
   fullscreenBtn && fullscreenBtn.classList.add("active");
-
-  // Play audio if a file is selected
-if(selectedAudioSrc){
-  audioPlayer.play().catch(e => console.log("Audio playback issue:", e));
-}
 
   const floatingControls = document.getElementById("floatingControls");
   if(floatingControls) floatingControls.classList.add("active");
 
-  // ✅ تأكيد تحميل كل الصور قبل بدء العرض
-const imgs = masonry.querySelectorAll('.masonry-item img');
-imgs.forEach(img => {
-  if (!img.src && img.dataset.fullsrc) {
-    img.src = img.dataset.fullsrc;
+  // 🔹 تشغيل الصوت لو موجود
+  if(selectedAudioSrc){
+    audioPlayer.play().catch(e => console.log("Audio playback issue:", e));
   }
-});
 
-// 🔹 إخفاء Scrollbar عند بدء العرض
-document.body.style.overflow = 'hidden';
-document.documentElement.style.overflow = 'hidden';
+  // 🔹 إخفاء Scrollbar عند بدء العرض
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
 
+  // 🔹 بدء العرض
   revealNext();
 
   btnStart && (btnStart.disabled = true);
@@ -1482,8 +1500,6 @@ document.documentElement.style.overflow = 'hidden';
   if(btnResume) btnResume.classList.add('hidden');
   statusEl && (statusEl.textContent = 'Displaying');
 }
-
-
 
 /* ============================
    IndexedDB
@@ -1545,6 +1561,22 @@ async function saveImagesBatch(blobs) {
   return new Promise(res => (tx.oncomplete = res));
 }
 
+function saveProgress(index) {
+  localStorage.setItem('img_save_progress', index);
+}
+
+function getProgress() {
+  return Number(localStorage.getItem('img_save_progress') || 0);
+}
+
+function clearProgress() {
+  localStorage.removeItem('img_save_progress');
+}
+
+fileInput.addEventListener('change', clearProgress); // لو غيرت الملفات
+
+
+
 /* ============================
    Compress imges
    ============================ */
@@ -1595,52 +1627,49 @@ fileInput && fileInput.addEventListener('change', async () => {
 /* ============================
    Save images (compressed)
    ============================ */
-btnSaveImgs && btnSaveImgs.addEventListener('click', async () => {
+btnSaveImgs.addEventListener('click', async () => {
   const files = Array.from(fileInput.files || []);
-  if(!files.length){ 
-  alert('Please select at least one image'); 
-  return; 
-}
-  await openDB();
+  if (!files.length) return alert('Please select at least one image');
 
-  const compressImage = (file, quality=0.5, maxWidth=800) => new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = e=>{
-      const img = new Image();
-      img.onload = ()=>{
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(maxWidth/img.width,1);
-        canvas.width = img.width*scale;
-        canvas.height = img.height*scale;
-        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-        canvas.toBlob(blob=>resolve(blob),'image/jpeg',quality);
-      };
-      img.onerror=reject;
-      img.src=e.target.result;
-    };
-    reader.onerror=reject;
-    reader.readAsDataURL(file);
-  });
+  await openDB(); // تأكد IndexedDB جاهز
 
-  const results=[];
-  for(const f of files){
-    try{
-      if(!f.type.startsWith('image/')) throw 'not_image';
-      const blob = await compressImage(f);
-      await saveImageToDB(blob);
-      results.push(f.name);
-    }catch(e){ console.warn('Failed to save:', f.name, e); }
+  const BATCH_SIZE = 20;
+  const CONCURRENCY = 4;
+  let startIndex = getProgress();
+
+  for (let i = startIndex; i < files.length; i += BATCH_SIZE) {
+    const batch = files.slice(i, i + BATCH_SIZE);
+
+    for (let j = 0; j < batch.length; j += CONCURRENCY) {
+      const chunk = batch.slice(j, j + CONCURRENCY);
+
+      const worker = new Worker('worker.js');
+      worker.postMessage({ files: chunk });
+
+      const blobs = await new Promise(resolve => {
+        worker.onmessage = (e) => {
+          worker.terminate();
+          resolve(e.data);
+        };
+      });
+
+      for (let item of blobs) {
+        if (!item.error) await saveImageToDB(item.blob);
+        else console.warn('Failed:', item.name, item.error);
+      }
+
+      saveProgress(i + j + chunk.length); // احفظ التقدم
+    }
   }
 
-  fileInput.value='';
-  if(preview) preview.innerHTML='';
+  clearProgress();
+  fileInput.value = '';
+  preview && (preview.innerHTML = '');
   renderMasonry();
 
-  if(welcomeEl){
-    welcomeEl.textContent = `Saved ${results.length} image${results.length > 1 ? 's' : ''} locally`;
-    showTemp(welcomeEl,1200);
-  }
+  alert(`Saved ${files.length} images successfully`);
 });
+
 
 /* ============================
    Clear images
