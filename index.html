@@ -59,6 +59,20 @@ a{color:inherit;text-decoration:none}
 /* ===========================
    Header (transparent)
    =========================== */
+.logo::before{
+  content:"";
+  width:38px;
+  height:38px;
+  flex-shrink:0;
+  border-radius:50%;
+  background-image:url("./images/ChatGPT\ Image\ Jan\ 18\,\ 2026\,\ 10_47_42\ AM.png"); /* ضع مسار اللوجو هنا */
+  background-size:cover;
+  background-position:center;
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.4),
+    0 6px 16px rgba(0,0,0,0.6);
+}
+
 .header{
   position:fixed; 
   left:16px; right:16px; top:16px; 
@@ -74,8 +88,14 @@ a{color:inherit;text-decoration:none}
   backdrop-filter: blur(6px) saturate(1.05);
   box-shadow: 0 8px 30px rgba(0,0,0,0.6);
 }
-.logo{display:flex;align-items:center;gap:12px;}
-.logo .brand{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;font-weight:700}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo .brand{font-family:'Playfair Display',serif;color:var(--gold);
+.logo img{
+  height:42px;
+  width:auto;
+  transition:0.3s ease;
+}
+font-size:20px;font-weight:700}
 .logo .tag{font-size:12px;color:#9aa4b2}
 .nav{display:flex;gap:10px;align-items:center}
 .nav .nav-btn{
@@ -89,19 +109,162 @@ a{color:inherit;text-decoration:none}
 }
 
 /* Dropdown sections panel */
-.sections-panel{
-  position: absolute; 
-  top:56px; 
-  right:0; 
-  min-width:260px; 
-  border-radius:10px; 
-  padding:10px;
-  background: linear-gradient(180deg,white, white);
-  border:1px solid rgba(255,255,255,0.03); 
-  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+.sections-panel::before{
+  content:"";
+  display:block;
+  width:56px;
+  height:56px;
+  margin:14px 14px 10px auto; /* يمين */
+  border-radius:50%;
+  background-image:url("./images/ChatGPT\ Image\ Jan\ 18\,\ 2026\,\ 10_47_42\ AM.png");
+  background-size:cover;
+  background-position:center;
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.4),
+    0 10px 22px rgba(0,0,0,0.7);
 }
-.sections-panel a{display:block;padding:8px 10px;border-radius:8px;color:black;font-weight: bold;}
+
+.sections-panel{
+  position:absolute;
+  top:56px;
+  right:0;
+  min-width:260px;
+  border-radius:12px;
+  padding:10px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(20,20,20,0.92),
+    rgba(12,12,12,0.96)
+  );
+
+  border:1px solid rgba(212,175,55,0.12);
+  backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.75);
+}
+
+.sections-panel a{display:block;padding:8px 10px;border-radius:8px;color:white;font-weight: bold;}
 .sections-panel a:hover{background:rgba(255,255,255,0.02); color:var(--gold)}
+
+/* ===== Banner Frame ===== */
+#banner {
+  position: relative;
+  top: 17vh; /* نبدأ من تحت الهيدر */
+  width: 97vw;
+  height: calc(25vh); /* نسبي للنافذة */
+  max-height: 300px;
+  min-height: 180px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.05);
+  margin-top: 80px; /* نفس ارتفاع الهيدر */
+}
+
+
+
+.banner-track {
+  display: flex;
+  gap: 2vw;
+  width: max-content;
+  will-change: transform;
+}
+
+
+.banner-item {
+  position: relative;
+  flex: 0 0 auto;
+  width: 200px;      /* عرض موحد */
+  height: 250px;     /* ارتفاع موحد */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* يملا المكان */
+  border-radius: 8px;
+  background: #000;
+  transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+}
+
+.effect-name {
+  position: absolute;
+  top: 6px;               /* فوق الصورة مباشرة */
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFD700;         /* لون ذهبي زاهي */
+  font-size: 18px;        /* أكبر من السابق */
+  font-weight: 800;       /* أكثر سمك */
+  text-shadow: 3px 3px 5px black; /* بارز وواضح */
+  white-space: nowrap;
+  pointer-events: none;   /* منع تفاعل الماوس مع العنوان */
+  z-index: 2;             /* فوق الصورة */
+}
+img.zoom { transform: scale(1); transition: transform 0.5s ease; }
+img.zoom.active { transform: scale(1.2); }
+
+/* Fade */
+img.fade {
+  opacity: 1;
+  transition: opacity 0.8s ease; /* خليها أطول شوية عشان تظهر */
+}
+
+img.fade.active {
+  opacity: 0.5; /* أو أقل/أعلى حسب ما تحب */
+}
+
+img.blur { filter: blur(0px); transition: filter 0.5s ease; }
+img.blur.active { filter: blur(3px); }
+
+img.spin { transform: rotate(0deg); transition: transform 0.8s ease; }
+img.spin.active { transform: rotate(360deg); }
+
+img.scalex { transform: scaleX(1); transition: transform 0.5s ease; }
+img.scalex.active { transform: scaleX(1.3); }
+
+img.scaley { transform: scaleY(1); transition: transform 0.5s ease; }
+img.scaley.active { transform: scaleY(1.3); }
+
+img.rotate3d { transform: rotate3d(0,0,0,0deg); transition: transform 0.8s ease; }
+img.rotate3d.active { transform: rotate3d(1,1,0,180deg); }
+
+img.flip3d {
+  transform: rotateY(0deg);
+  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+}
+img.flip3d.active { transform: rotateY(180deg); }
+
+img.bounce { transform: translateY(0); }
+img.bounce.active { animation: bounceAnim 0.5s forwards; }
+
+img.shutter { clip-path: inset(0 100% 0 0); }
+img.shutter.active { animation: shutterAnim 0.6s forwards; }
+
+@keyframes bounceAnim {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes shutterAnim {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+.effect-name {
+  position: absolute;
+  top: 0px;               /* فوق الصورة */
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFD700;
+  font-size: 15px;        /* أكبر وأزهى */
+  font-weight: bold;       /* سميك */
+  text-shadow: 3px 3px 5px black;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
 
 /* ===========================
    Page container & layout
@@ -685,121 +848,154 @@ img.effect-shutter {
 
 
 
-/* ===== Responsive header and menu ===== */
-@media (max-width:980px){
-  .header{
+/* ===== Responsive Header and Menu ===== */
+@media (max-width: 980px) {
+  .header {
     flex-direction: column;
     align-items: flex-start;
-    gap:8px;
-    padding:10px 12px;
+    gap: 8px;
+    padding: 10px 12px;
   }
-  .nav{
+
+  .nav {
     width: 100%;
     justify-content: space-between;
   }
-  .nav .nav-btn{
-    flex:1;
+
+  .nav .nav-btn {
+    flex: 1;
     text-align: center;
   }
-}
 
-/* ===== Optimize masonry for medium screens ===== */
-@media (max-width:1100px){
-  .masonry{
-    column-count:2;
-    column-gap:10px; /* unified spacing */
+  .logo {
+    width: 100%;
+  
+  }
+
+  .logo img {
+    height: 32px;
   }
 }
 
-
-@media (max-width:700px){
-  .masonry{
-    column-count:1;
-    column-gap:8px;
+/* ===== Optimize Masonry for Medium Screens ===== */
+@media (max-width: 1100px) {
+  .masonry {
+    column-count: 2;
+    column-gap: 10px; /* unified spacing */
   }
-  .layout{
-    grid-template-columns:1fr;
-    gap:12px;
+
+  .logo img {
+    height: 36px;
   }
 }
-@media (min-width:1101px) and (max-width:1599px){
-  .masonry{
-    column-count:3;
-    column-gap:14px;
+
+/* ===== Small Screens (Mobile) ===== */
+@media (max-width: 700px) {
+   #banner {
+    top: 15vh; /* فاصل أكبر قليلاً */
+  }
+  .masonry {
+    column-count: 1;
+    column-gap: 8px;
   }
 
-  .panel{
-    padding:20px;
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ===== Medium Screens (Desktop Small-Medium) ===== */
+@media (min-width: 701px) and (max-width: 1100px) {
+  #banner {
+    top: 10vh; /* فاصل أكبر قليلاً */
+  }
+}
+
+/* ===== Desktop Medium-Large ===== */
+@media (min-width: 1101px) and (max-width: 1599px) {
+  .masonry {
+    column-count: 3;
+    column-gap: 14px;
+  }
+
+  .panel {
+    padding: 20px;
   }
 
   .nav .nav-btn,
   #btnStart, #btnStartLoop, #btnSaveImgs, #btnClearImgs,
-  #btnSaveSettings, #btnResetSettings{
-    padding:10px 14px;
-    font-size:14px;
+  #btnSaveSettings, #btnResetSettings {
+    padding: 10px 14px;
+    font-size: 14px;
   }
 
-  #floatingControls button{
-    padding:8px 12px;
-    font-size:13px;
+  #floatingControls button {
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
-  .modal{
-    width:500px;
-    padding:18px;
+  .modal {
+    width: 500px;
+    padding: 18px;
   }
 
-  .modal h3{
-    font-size:18px;
+  .modal h3 {
+    font-size: 18px;
   }
 
-  .modal p{
-    font-size:15px;
+  .modal p {
+    font-size: 15px;
   }
 }
 
-@media (min-width:1600px){
-  .container{
+/* ===== Large Screens (Desktop XL) ===== */
+@media (min-width: 1600px) {
+  .container {
     max-width: 1600px;
     padding: 40px;
   }
 
-  .masonry{
+  .masonry {
     column-count: 4;
     column-gap: 16px;
   }
 
-  .masonry-item{
-    border-radius:16px;
+  .masonry-item {
+    border-radius: 16px;
   }
 
-  .panel{
-    padding:24px;
+  .panel {
+    padding: 24px;
+  }
+
+  .logo img {
+    height: 48px;
   }
 
   .nav .nav-btn,
   #btnStart, #btnStartLoop, #btnSaveImgs, #btnClearImgs,
-  #btnSaveSettings, #btnResetSettings{
-    padding:12px 18px;
-    font-size:16px;
+  #btnSaveSettings, #btnResetSettings {
+    padding: 12px 18px;
+    font-size: 16px;
   }
 
-  #floatingControls button{
-    padding:10px 16px;
-    font-size:14px;
+  #floatingControls button {
+    padding: 10px 16px;
+    font-size: 14px;
   }
 
-  .modal{
+  .modal {
     width: 600px;
-    padding:20px;
+    padding: 20px;
   }
 
-  .modal h3{
-    font-size:20px;
+  .modal h3 {
+    font-size: 20px;
   }
 
-  .modal p{
-    font-size:16px;
+  .modal p {
+    font-size: 16px;
   }
 }
 
@@ -854,6 +1050,7 @@ img.effect-shutter {
         </nav>
 
         <div id="sectionsPanel" class="sections-panel hidden" style="right:0">
+          <a href="#banner" class="sec-link">The banner</a>
           <a href="#settings" class="sec-link">Display Settings</a>
           <a href="#upload" class="sec-link">Upload Photos</a>
           <a href="#socials" class="sec-link">Social Media & Video</a>
@@ -862,6 +1059,12 @@ img.effect-shutter {
         </div> 
       </div>
     </div>
+
+<!-- banner  -->
+   <div id="banner">
+  <div class="banner-track"></div>
+</div>
+
 
     <!-- Page container -->
     <div class="container" id="mainSite">
@@ -1104,6 +1307,199 @@ const btnContactSend = document.getElementById('btnContactSend');
 const toTop = document.getElementById('toTop');
 
 const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+const bannerTrack = document.querySelector('.banner-track');
+
+function showMessage(msg, btnEl, duration = 2000) {
+  // لو فيه رسالة قديمة امسحها
+  const oldMsg = btnEl.querySelector('.toast-msg');
+  if (oldMsg) oldMsg.remove();
+
+  const messageEl = document.createElement('span');
+  messageEl.className = 'toast-msg';
+  messageEl.textContent = msg;
+
+  Object.assign(messageEl.style, {
+    position: 'absolute',
+    top: '-30px',          // فوق الزر
+    left: '50%',
+    transform: 'translateX(-50%)',
+    fontSize: '12px',
+    color: '#000',
+    background: '#fff',
+    border: '1px solid #ccc',
+    padding: '3px 8px',
+    borderRadius: '4px',
+    whiteSpace: 'nowrap',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+    opacity: 0,
+    transition: 'opacity 0.3s ease',
+    zIndex: 1000
+  });
+
+  // تأكد إن الزر position: relative
+  const prevPos = window.getComputedStyle(btnEl).position;
+  if (prevPos === 'static') btnEl.style.position = 'relative';
+
+  btnEl.appendChild(messageEl);
+
+  // fade in
+  requestAnimationFrame(() => {
+    messageEl.style.opacity = 1;
+  });
+
+  // fade out بعد مدة
+  setTimeout(() => {
+    messageEl.style.opacity = 0;
+    setTimeout(() => messageEl.remove(), 300);
+  }, duration);
+}
+//Confirm Message
+function showConfirm(msg, btnEl, onYes, onNo) {
+  // امسح أي رسالة قديمة
+  const oldMsg = document.querySelector('.toast-confirm');
+  if (oldMsg) oldMsg.remove();
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'toast-confirm';
+  Object.assign(wrapper.style, {
+    position: 'absolute',
+    background: '#fff',
+    border: '1px solid #ccc',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '6px',
+    zIndex: 9999
+  });
+
+  const rect = btnEl.getBoundingClientRect();
+  wrapper.style.top = `${rect.top - 60 + window.scrollY}px`; // فوق الزر
+  wrapper.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
+  wrapper.style.transform = 'translateX(-50%)';
+
+  const text = document.createElement('span');
+  text.textContent = msg;
+  text.style.fontSize = '12px';
+  text.style.color = '#000';
+
+  const btnContainer = document.createElement('div');
+  Object.assign(btnContainer.style, { display: 'flex', gap: '6px' });
+
+  const yesBtn = document.createElement('button');
+  yesBtn.textContent = 'Yes';
+  Object.assign(yesBtn.style, {
+    padding: '4px 8px', cursor: 'pointer', background: '#4caf50', color: '#fff', border: 'none', borderRadius: '4px'
+  });
+
+  const noBtn = document.createElement('button');
+  noBtn.textContent = 'No';
+  Object.assign(noBtn.style, {
+    padding: '4px 8px', cursor: 'pointer', background: '#f44336', color: '#fff', border: 'none', borderRadius: '4px'
+  });
+
+  btnContainer.appendChild(yesBtn);
+  btnContainer.appendChild(noBtn);
+  wrapper.appendChild(text);
+  wrapper.appendChild(btnContainer);
+
+  document.body.appendChild(wrapper);
+
+  yesBtn.onclick = () => {
+    wrapper.remove();
+    onYes && onYes();
+  };
+
+  noBtn.onclick = () => {
+    wrapper.remove();
+    onNo && onNo();
+  };
+}
+
+let bannerImages = [
+  { src: './images/bird.jpg', effect: 'zoom', caption: 'Clouds' },
+  { src: './images/cat.webp', effect: 'fade', caption: 'Flower Petals' },
+  { src: './images/Egypt.jpg', effect: 'spin', caption: 'Post Rain Sunset' },
+  { src: './images/flower-petals.webp', effect: 'flip3d', caption: 'Sketch' },
+  { src: './images/man&horse.webp', effect: 'blur', caption: 'Iconic' },
+  { src: './images/nature.jpg', effect: 'scalex', caption: 'Scale X' },
+  { src: './images/post-rain-sunset.webp', effect: 'scaley', caption: 'Scale Y' },
+  { src: './images/river.jpg', effect: 'bounce', caption: 'Bounce' },
+  { src: './images/sket.webp', effect: 'rotate3d', caption: 'Rotate 3D' },
+  { src: './images/big_flower.jpg', effect: 'shutter', caption: 'Shutter' },
+];
+
+function loadBanner(images) {
+  bannerTrack.innerHTML = '';
+  images.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'banner-item';
+
+    const img = document.createElement('img');
+    img.src = item.src;
+    img.classList.add(item.effect);
+
+    const label = document.createElement('div');
+    label.className = 'effect-name';
+    label.textContent = item.effect;
+
+    div.append(img, label);
+    bannerTrack.appendChild(div);
+  });
+}
+
+loadBanner(bannerImages);
+
+let bannerItems = document.querySelectorAll('.banner-item');
+let currentIndex = 0;
+
+// تشغيل التأثير لكل صورة على حدة
+function triggerEffects() {
+  bannerItems.forEach((item, index) => {
+    const img = item.querySelector('img');
+    img.classList.remove('active');
+    void img.offsetWidth;
+    if (index === currentIndex) {
+      img.classList.add('active');
+    }
+  });
+  currentIndex = (currentIndex + 1) % bannerItems.length;
+}
+
+setInterval(triggerEffects, 1000);
+
+// حركة البانر الدائرية
+function startBannerLoop() {
+  const gap = 16;
+  const repeatFactor = 0.6; // اضبطها حسب ذوقك
+  let offset = 0;
+
+  function animate() {
+    offset -= 0.15;
+
+    const firstItem = bannerTrack.firstElementChild;
+    const firstWidth = firstItem.offsetWidth + gap;
+
+    if (Math.abs(offset) >= firstWidth * repeatFactor) {
+      offset += firstWidth;
+      bannerTrack.appendChild(firstItem);
+    }
+
+    bannerTrack.style.transform = `translateX(${offset}px)`;
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+}
+
+
+startBannerLoop();
+
+
+
 
 fullscreenBtn && fullscreenBtn.addEventListener("click", () => {
   if (!document.fullscreenElement) {
@@ -1447,7 +1843,8 @@ const messageEl = document.createElement('span');
   const hasValidImg = Array.from(imgs).some(img => img.src || img.dataset.fullsrc);
   
   if(!hasValidImg){
-    alert("No images found. Please upload at least one image to start the slideshow.");
+    // عرض رسالة بديلة للـ alert
+    showMessage("!! No images found. Please upload at least one image to start the slideshow.", btnStart);
     
     // 🔹 إخفاء أي أزرار عائمة ظهرت سابقًا
     const floatingControls = document.getElementById("floatingControls");
@@ -1500,6 +1897,7 @@ const messageEl = document.createElement('span');
   if(btnResume) btnResume.classList.add('hidden');
   statusEl && (statusEl.textContent = 'Displaying');
 }
+
 
 /* ============================
    IndexedDB
@@ -1629,7 +2027,7 @@ fileInput && fileInput.addEventListener('change', async () => {
    ============================ */
 btnSaveImgs.addEventListener('click', async () => {
   const files = Array.from(fileInput.files || []);
-  if (!files.length) return alert('Please select at least one image');
+  if (!files.length) return showMessage('!! Please select at least one image', btnSaveImgs);
 
   await openDB(); // تأكد IndexedDB جاهز
 
@@ -1667,20 +2065,41 @@ btnSaveImgs.addEventListener('click', async () => {
   preview && (preview.innerHTML = '');
   renderMasonry();
 
-  alert(`Saved ${files.length} images successfully`);
+  showMessage(`!! Saved ${files.length} images successfully`, btnSaveImgs);
 });
 
 
 /* ============================
    Clear images
    ============================ */
-btnClearImgs && btnClearImgs.addEventListener('click', async ()=>{
-  if(!confirm('All locally stored images will be deleted. Continue?')) return;
-  await openDB();
-  await clearAllImagesFromDB();
-  renderMasonry();
-  alert('Images have been cleared');
+btnClearImgs && btnClearImgs.addEventListener('click', async () => {
+  const imgs = masonry.querySelectorAll('.masonry-item img');
+  const hasValidImg = Array.from(imgs).some(img => img.src || img.dataset.fullsrc);
+
+  if (!hasValidImg) {
+    // لو مفيش صور، امنع الزر من العمل وأظهر رسالة
+    showMessage('!! No images to clear', btnClearImgs);
+    return;
+  }
+
+  showConfirm(
+    ' !! Delete all images', 
+    btnClearImgs, 
+    async () => {
+      await openDB();
+      await clearAllImagesFromDB();
+      renderMasonry();
+      showMessage('!! Images have been deleted', btnClearImgs);
+    },
+    () => {
+      showMessage('!! Action cancelled', btnClearImgs);
+    }
+  );
 });
+
+
+
+
 
 /* ============================
    Render masonry
@@ -2138,24 +2557,25 @@ closeVideo && closeVideo.addEventListener('click', ()=>{
    ============================ */
 // حدث الضغط على زر الإرسال
   btnContactSend && btnContactSend.addEventListener('click', () => {
-    const msg = (contactMsg && contactMsg.value || '').trim();
+  const msg = (contactMsg && contactMsg.value || '').trim();
 
-    // التأكد أن المستخدم كتب رسالة
-    if (!msg) {
-      alert('Please enter a message first');
-      return;
-    }
+  // التأكد أن المستخدم كتب رسالة
+  if (!msg) {
+    showMessage('!! Please enter a message first', btnContactSend);
+    return;
+  }
 
-    // إرسال الرسالة باستخدام EmailJS
-    emailjs.send('service_shwc2zn', 'template_k1gkypk', { message: msg })
-      .then(() => {
-        alert('Message sent successfully');
-        if(contactMsg) contactMsg.value = '';
-      })
-      .catch(() => {
-        alert('Failed to send message');
-      });
-  });
+  // إرسال الرسالة باستخدام EmailJS
+  emailjs.send('service_shwc2zn', 'template_k1gkypk', { message: msg })
+    .then(() => {
+      showMessage('!! Message sent successfully', btnContactSend);
+      if(contactMsg) contactMsg.value = '';
+    })
+    .catch(() => {
+      showMessage('!! Failed to send message', btnContactSend);
+    });
+});
+
 
 /* ============================
    Scroll to top button
