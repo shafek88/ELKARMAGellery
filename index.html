@@ -1110,6 +1110,10 @@ img.effect-shutter {
                 <option value="./music&videos/622S72Tc.mp3">Arefa - Omar Khairat</option>
               <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa - Omar Khairat</option>
                <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader - El Essily</option>
+                <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy birthday-WalidToufic</option>
+                 <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adriftamonginfinitestars</option>
+                 <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream-Up</option>
+                 <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Giv-me-a-smile</option>
               </select>
               <input type="file" id="audioFileInput" accept="audio/*" style="display:none; margin-top:8px;">
             </div>            
@@ -1159,6 +1163,8 @@ img.effect-shutter {
           <div class="controls" style="margin-top:12px">
             <button id="btnStart" class="btn-primary">▶️ Play</button>
            <button id="btnStartLoop" class="btn-primary">▶️ Continuous</button>
+           <button id="btnExportVideo" class="btn-primary">🎬 Export Video</button>
+           <span id="exportStatus"></span>
           </div>
 
           <div id="show" class="masonry" style="margin-top:14px;min-height:220px"></div>
@@ -1305,6 +1311,8 @@ const contactMsg = document.getElementById('contactMsg');
 const btnContactSend = document.getElementById('btnContactSend');
 
 const toTop = document.getElementById('toTop');
+
+const exportStatusEl = document.getElementById('exportStatus');
 
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
@@ -2717,6 +2725,12 @@ const dateSpan = document.getElementById('currentDate');
 // =========================
 
 </script>
-</div>
+<canvas
+  id="exportCanvas"
+  width="1920"
+  height="1080"
+  style="display:none">
+</canvas>
+<script src="export-video.js"></script>
 </body>
 </html>
