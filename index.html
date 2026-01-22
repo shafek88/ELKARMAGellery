@@ -2029,7 +2029,7 @@ fileInput && fileInput.addEventListener('change', async () => {
   }
 
   for (const file of files.slice(0, 12)) {
-    const compressedBlob = await compressImageFast(file, 1280, 0.75);
+    const compressedBlob = await compressImage(file, 1280, 0.75);
     const url = URL.createObjectURL(compressedBlob);
 
     const img = document.createElement('img');
