@@ -1094,27 +1094,32 @@ img.effect-shutter {
             <div id="audioSettings" style="margin-top:12px">
               <label>🎵 Background Music</label>
               <select id="audioSelect">
-                <option value="">Select an audio file</option>
-               <option value="local">Audio file from your device</option>
-                <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">Lost in void</option>
-                <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3">At the end of all things</option>
-                <option value="./music&videos/happy-birthday-155461.mp3">Happy birthday</option>
-                <option value="./music&videos/Christmas-Magic-chosic.com_.mp3">Christmas magic</option>
-                <option value="./music&videos/Lady.mp3">Lady</option>
-                <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3">Sun shine</option>
-                <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3">Happy-Clappy</option>
-                <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3">Scott-Buckley-Moonlight</option>
-                <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams Elthanaty-Hany Shenoda</option>
-                <option value="./music&videos/10NZ39BH.mp3">Omar Khairat - Afwan Ayyuha Al-Qanun</option>
-                <option value="./music&videos/53gp29hm.mp3">Omar Khairat - Qadiyat Am Ahmed</option>
-                <option value="./music&videos/622S72Tc.mp3">Arefa - Omar Khairat</option>
-              <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa - Omar Khairat</option>
-               <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader - El Essily</option>
-                <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy birthday-WalidToufic</option>
-                 <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adriftamonginfinitestars</option>
-                 <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream-Up</option>
-                 <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Giv-me-a-smile</option>
-              </select>
+  <option value="">Select an audio file</option>
+  <option value="local">Upload audio from your device</option>
+
+  <!-- English Tracks -->
+  <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">Lost in the Void</option>
+  <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3">At the End of All Things</option>
+  <option value="./music&videos/happy-birthday-155461.mp3">Happy Birthday</option>
+  <option value="./music&videos/Christmas-Magic-chosic.com_.mp3">Christmas Magic</option>
+  <option value="./music&videos/Lady.mp3">Lady</option>
+  <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3">Sunshine Boulevard</option>
+  <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3">Happy Clappy</option>
+  <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3">Moonlight - Scott Buckley</option>
+  <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adrift Among Infinite Stars</option>
+  <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream Up</option>
+  <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Give Me a Smile</option>
+
+  <!-- Arabic / Egyptian Tracks -->
+  <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams El-Zanaty - Hany Shenouda</option>
+  <option value="./music&videos/10NZ39BH.mp3">Afwan Ayyuha Al-Qanun - Omar Khairat</option>
+  <option value="./music&videos/53gp29hm.mp3">Qadiyat Am Ahmed - Omar Khairat</option>
+  <option value="./music&videos/622S72Tc.mp3">Arefa - Omar Khairat</option>
+  <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa - Omar Khairat</option>
+  <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader - El Essily</option>
+  <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy Birthday - Walid Toufic</option>
+</select>
+
               <input type="file" id="audioFileInput" accept="audio/*" style="display:none; margin-top:8px;">
             </div>            
             <div style="margin-top:8px;display:flex;gap:8px">
@@ -1269,6 +1274,12 @@ const secLinks = document.querySelectorAll('.sec-link');
 const btnRegister = document.getElementById('btnRegister');
 const btnClearAll = document.getElementById('btnClearAll');
 const welcomeEl = document.getElementById('welcomeForm');
+
+const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+const isFacebook = /FBAN|FBAV/i.test(navigator.userAgent);
+
+const allowLocalAudio = !(isMobile && isFacebook);
+
 
 const fileInput = document.getElementById('fileInput');
 const btnSaveImgs = document.getElementById('btnSaveImgs');
@@ -2725,12 +2736,8 @@ const dateSpan = document.getElementById('currentDate');
 // =========================
 
 </script>
-<canvas
-  id="exportCanvas"
-  width="1920"
-  height="1080"
-  style="display:none">
-</canvas>
+<canvas id="exportCanvas" width="1280" height="720" style="display:none"></canvas>
+<!-- كودك -->
 <script src="export-video.js"></script>
 </body>
 </html>
