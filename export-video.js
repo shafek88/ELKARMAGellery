@@ -12,20 +12,21 @@ function loadImage(src) {
 }
 
 /* =========================
-   Draw Image Centered Fullscreen
+   Draw Image Centered with Contain (Fits all screens)
    ========================= */
 function drawCenteredImage(ctx, img) {
   const cw = ctx.canvas.width;
   const ch = ctx.canvas.height;
 
-  // نسبة التكبير بحيث الصورة تغطي الكانفاس كله
-  const scale = Math.max(cw / img.width, ch / img.height);
+  // scale لتناسب الصورة بالكامل داخل الكانفاس
+  const scale = Math.min(cw / img.width, ch / img.height);
 
   const w = img.width * scale;
   const h = img.height * scale;
 
   ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
 }
+
 
 /* =========================
    Effects
@@ -80,7 +81,7 @@ async function exportVideo() {
 
   const { effect, delay, audio } = getCurrentSettings();
 
-  exportStatusEl && (exportStatusEl.textContent = '⏳ Exporting video...');
+  exportStatusEl && (exportStatusEl.textContent = '⏳...Exporting video');
 
   const stream = canvas.captureStream(60);
 
