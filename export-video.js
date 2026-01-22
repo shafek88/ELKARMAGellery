@@ -1,5 +1,5 @@
 /* =========================
-   Load Image Helper
+   Helpers: Load Image
    ========================= */
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -12,33 +12,35 @@ function loadImage(src) {
 }
 
 /* =========================
-   Draw Image Centered with slight scaling
+   Draw Image Centered Fullscreen
    ========================= */
 function drawCenteredImage(ctx, img) {
   const cw = ctx.canvas.width;
   const ch = ctx.canvas.height;
-  const baseRatio = Math.min(cw / img.width, ch / img.height);
-  const scaleX = 1.08;
-  const scaleY = 1.02;
-  const w = img.width * baseRatio * scaleX;
-  const h = img.height * baseRatio * scaleY;
-  ctx.drawImage(img, -w / 2, -h / 2, w, h);
+
+  // نسبة التكبير بحيث الصورة تغطي الكانفاس كله
+  const scale = Math.max(cw / img.width, ch / img.height);
+
+  const w = img.width * scale;
+  const h = img.height * scale;
+
+  ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
 }
 
 /* =========================
    Effects
    ========================= */
-function zoom(ctx, img, p){ ctx.scale(0.8 + 0.2*p, 0.8 + 0.2*p); drawCenteredImage(ctx, img); }
+function zoom(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.scale(0.8 + 0.2*p, 0.8 + 0.2*p); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
 function fade(ctx, img, p){ ctx.globalAlpha = p; drawCenteredImage(ctx, img); ctx.globalAlpha = 1; }
-function slide(ctx, img, p){ ctx.translate((1 - p) * 300, 0); drawCenteredImage(ctx, img); }
+function slide(ctx, img, p){ ctx.save(); ctx.translate((1 - p) * 300, 0); drawCenteredImage(ctx, img); ctx.restore(); }
 function blur(ctx, img, p){ ctx.filter = `blur(${15*(1-p)}px)`; drawCenteredImage(ctx, img); ctx.filter = 'none'; }
-function spin(ctx, img, p){ ctx.rotate(p * Math.PI * 2); drawCenteredImage(ctx, img); }
-function flip3d(ctx, img, p){ ctx.scale(Math.cos(p*Math.PI), 1); drawCenteredImage(ctx, img); }
-function scalex(ctx, img, p){ ctx.scale(p,1); drawCenteredImage(ctx, img); }
-function scaley(ctx, img, p){ ctx.scale(1,p); drawCenteredImage(ctx, img); }
-function bounce(ctx, img, p){ ctx.translate(0, Math.sin(p*Math.PI)*-100); drawCenteredImage(ctx, img); }
-function rotate3d(ctx, img, p){ ctx.rotate((p-0.5)*Math.PI); drawCenteredImage(ctx, img); }
-function shutter(ctx, img, p){ ctx.scale(1,p); drawCenteredImage(ctx, img); }
+function spin(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.rotate(p * Math.PI * 2); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
+function flip3d(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.scale(Math.cos(p*Math.PI), 1); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
+function scalex(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.scale(p,1); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
+function scaley(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.scale(1,p); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
+function bounce(ctx, img, p){ ctx.save(); ctx.translate(0, Math.sin(p*Math.PI)*-100); drawCenteredImage(ctx, img); ctx.restore(); }
+function rotate3d(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.rotate((p-0.5)*Math.PI); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
+function shutter(ctx, img, p){ ctx.save(); ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); ctx.scale(1,p); ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2); drawCenteredImage(ctx, img); ctx.restore(); }
 
 const EFFECTS = { zoom, fade, slide, blur, spin, flip3d, scalex, scaley, bounce, rotate3d, shutter };
 
@@ -52,10 +54,7 @@ async function drawFrame(ctx, imgSrc, effect, duration) {
     function animate(t) {
       const p = Math.min((t - start)/duration, 1);
       ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-      ctx.save();
-      ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
       EFFECTS[effect]?.(ctx, img, p);
-      ctx.restore();
       if(p < 1) requestAnimationFrame(animate);
       else resolve();
     }
@@ -64,14 +63,14 @@ async function drawFrame(ctx, imgSrc, effect, duration) {
 }
 
 /* =========================
-   Export Video as WebM only
+   Export Video + Audio
    ========================= */
 async function exportVideo() {
   const canvas = document.getElementById('exportCanvas');
   const ctx = canvas.getContext('2d');
 
   const images = Array.from(
-    masonry.querySelectorAll('.masonry-item img')
+    document.querySelectorAll('.masonry-item img')
   ).map(img => img.src).filter(Boolean);
 
   if(!images.length) {
@@ -79,10 +78,22 @@ async function exportVideo() {
     return;
   }
 
-  const { effect, delay } = getCurrentSettings();
-  exportStatusEl.textContent = '⏳ Exporting video...';
+  const { effect, delay, audio } = getCurrentSettings();
+
+  exportStatusEl && (exportStatusEl.textContent = '⏳ Exporting video...');
 
   const stream = canvas.captureStream(60);
+
+  // 🔹 دمج الصوت من الإعدادات
+  let audioEl;
+  if(audio){
+    audioEl = new Audio(audio);
+    audioEl.loop = true;
+    audioEl.muted = true; // مكتوم أثناء التصدير
+    await audioEl.play().catch(()=>{});
+    const audioStream = audioEl.captureStream();
+    audioStream.getAudioTracks().forEach(track => stream.addTrack(track));
+  }
 
   const recorder = new MediaRecorder(stream, {
     mimeType: 'video/webm;codecs=vp9',
@@ -102,9 +113,17 @@ async function exportVideo() {
   recorder.onstop = async () => {
     const blob = new Blob(chunks, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
-    exportStatusEl.innerHTML = `✅ WebM ready! <a href="${url}" download="karma-video.webm">Download WebM</a>`;
+
+    exportStatusEl && (exportStatusEl.innerHTML = `✅ WebM ready! <a href="${url}" download="karma-video.webm">Download WebM</a>`);
+
+    // 🔹 وقف الصوت بعد انتهاء التصدير
+    if(audioEl){
+      audioEl.pause();
+      audioEl.src = '';
+      audioEl = null;
+    }
   };
 }
 
-// Bind button
+// ربط الزر
 document.getElementById('btnExportVideo')?.addEventListener('click', exportVideo);

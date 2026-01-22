@@ -1764,9 +1764,11 @@ function getCurrentSettings(){
   const s = readFromLS(LS_SETTINGS) || {};
   return {
     delay: Number(s.delay) || 1100,
-    effect: s.effect || 'zoom'
+    effect: s.effect || 'zoom',
+    audio: s.audio || null  // 🔹 هنا رجعنا الصوت
   };
 }
+
 
 /* ============================
    Save settings
