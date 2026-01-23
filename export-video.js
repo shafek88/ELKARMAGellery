@@ -148,34 +148,21 @@ const EFFECTS = { zoom, fade, slide, blur, spin, flip3d, scalex, scaley, bounce,
 /* =========================
    Draw Frame Animation
    ========================= */
-async function drawFrame(ctx, imgSrc, effect, duration) {
+async function drawFrame(ctx, imgSrc, effect, frameDuration) {
   const img = await loadImage(imgSrc);
   const start = performance.now();
+  
   return new Promise(resolve => {
-    function animate(t) {
-      const p = Math.min((t - start)/duration, 1);
-      ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    function animate(now) {
+      const elapsed = now - start;
+      const p = Math.min(elapsed / frameDuration, 1);
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       EFFECTS[effect]?.(ctx, img, p);
-      if(p < 1) requestAnimationFrame(animate);
+      if (p < 1) requestAnimationFrame(animate);
       else resolve();
     }
     requestAnimationFrame(animate);
   });
-}
-
-/* =========================
-   Get Current Settings (Live)
-   ========================= */
-function getCurrentSettings() {
-  const effectEl = document.getElementById('effectSelect');
-  const delayEl  = document.getElementById('delayInput');
-  const audioEl  = document.getElementById('audioSelect');
-
-  return {
-    effect: effectEl?.value || 'zoom',
-    delay: Number(delayEl?.value) || 1100,
-    audio: audioEl?.value || null
-  };
 }
 
 /* =========================
