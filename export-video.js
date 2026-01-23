@@ -18,11 +18,11 @@ function drawCenteredImage(ctx, img) {
   const cw = ctx.canvas.width;
   const ch = ctx.canvas.height;
 
-  const margin = 0.05; // 5% margin
+  const margin = 0.02; // 5% margin
   const maxW = cw * (1 - margin*2);
   const maxH = ch * (1 - margin*2);
 
-  const scale = Math.min(maxW / img.width, maxH / img.height);
+  const scale = Math.max(cw / img.width, ch / img.height);
 
   const w = img.width * scale;
   const h = img.height * scale;
@@ -190,13 +190,13 @@ async function exportVideo() {
   // تنظيف كامل قبل البدء
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // حجم YouTube القياسي
-  const width = 1920;
-  const height = 1080;
-  canvas.width = width;
-  canvas.height = height;
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
+const width = window.innerWidth;
+const height = window.innerHeight;
+canvas.width = width;
+canvas.height = height;
+canvas.style.width = width + 'px';
+canvas.style.height = height + 'px';
+
 
   const images = Array.from(
     document.querySelectorAll('.masonry-item img')
