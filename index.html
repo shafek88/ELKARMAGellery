@@ -1020,7 +1020,7 @@ img.effect-shutter {
 <body>
 
    <!-- Fullscreen registration (appears on top until user submits) -->
-   <div id="welcomeForm">
+   <!-- <div id="welcomeForm">
     <h2 style="color: gold;">Welcome to ELKARMA Gallery</h2>
     <input type="text" id="username" placeholder="Enter your name here" />
     <br>
@@ -1028,10 +1028,10 @@ img.effect-shutter {
     <br><br>
     <button class="start" onclick="startExperience()">Sign In ✅</button>
     <button class="no" onclick="denyAccess()">Not Now</button>
-  </div>
+  </div> -->
 
 <!-- ---------------- Blocked Message ---------------- -->
-<div id="blockedMessage">❌ Sorry… You cannot access us at the moment.</div>
+<!-- <div id="blockedMessage">❌ Sorry… You cannot access us at the moment.</div> -->
 
   <!-- Header -->
   <div id="siteContent">
@@ -2456,173 +2456,161 @@ function createFullscreenOverlay(){
   document.body.appendChild(fullscreenOverlay);
 }
 
+// repeat effects
+let effectInterval = null;
+
 function showFullscreen(src, effect, onComplete){
   createFullscreenOverlay();
 
   fsImg.src = src;
 
-// Full RESET
-fsImg.className = '';
-fsImg.style.transition = 'none';
-fsImg.style.transform = '';
-fsImg.style.filter = '';
-fsImg.style.animation = 'none';
-fsImg.style.opacity = '0';
+  // Full RESET
+  fsImg.className = '';
+  fsImg.style.transition = 'none';
+  fsImg.style.transform = '';
+  fsImg.style.filter = '';
+  fsImg.style.animation = 'none';
+  fsImg.style.opacity = '0';
 
-fullscreenOverlay.style.display = 'flex';
-fullscreenOverlay.style.opacity = '1';
-keepScreenOn();
+  fullscreenOverlay.style.display = 'flex';
+  fullscreenOverlay.style.opacity = '1';
+  keepScreenOn();
+
   fsImg.onload = () => {
-    switch(effect){
-  case 'zoom':
-  fsImg.style.transition = 'none';
-  fsImg.style.transform = 'scale(0.6)';
-    requestAnimationFrame(() => {
-     requestAnimationFrame(() => {
-          fsImg.style.transition = 'transform 1s ease, opacity 1s ease';
-          fsImg.style.opacity = '1';
-          fsImg.style.transform = 'scale(1)';
-      });
-    });
-    break;
 
-  case 'slide':
-   // Slide from right effect
-   fsImg.style.transition = 'none';
-      fsImg.style.transform = 'translateX(100px)';
+    // دالة داخلية لإعادة تشغيل نفس التأثير
+    function runEffect(){
+
+      // RESET قبل كل مرة
+      fsImg.style.transition = 'none';
+      fsImg.style.transform = '';
+      fsImg.style.filter = '';
+      fsImg.style.animation = 'none';
       fsImg.style.opacity = '0';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          fsImg.style.transition = 'transform 1s ease, opacity 1s ease';
-          fsImg.style.transform = 'translateX(0)';
+
+      fsImg.offsetHeight; // ⭐ force reflow
+
+      switch(effect){
+
+        case 'zoom':
+          fsImg.style.transform = 'scale(0.6)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'transform 1s ease, opacity 1s ease';
+              fsImg.style.opacity = '1';
+              fsImg.style.transform = 'scale(1)';
+            });
+          });
+        break;
+
+        case 'slide':
+          fsImg.style.transform = 'translateX(100px)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'transform 1s ease, opacity 1s ease';
+              fsImg.style.transform = 'translateX(0)';
+              fsImg.style.opacity = '1';
+            });
+          });
+        break;
+
+        case 'blur':
+          fsImg.style.filter = 'blur(15px)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'filter 1s ease, opacity 1s ease';
+              fsImg.style.filter = 'blur(0px)';
+              fsImg.style.opacity = '1';
+            });
+          });
+        break;
+
+        case 'spin':
+          fsImg.style.transform = 'rotate(-360deg) scale(0.3)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'transform 1.2s ease, opacity 1s ease';
+              fsImg.style.transform = 'rotate(0deg) scale(1)';
+              fsImg.style.opacity = '1';
+            });
+          });
+        break;
+
+        case 'flip3d':
+          fsImg.style.transform = 'rotateY(180deg) perspective(1000px)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'transform 1.1s ease, opacity 0.8s ease';
+              fsImg.style.transform = 'rotateY(0deg) scale(1)';
+              fsImg.style.opacity = '1';
+            });
+          });
+        break;
+
+        case 'scalex':
+          fsImg.style.transform = 'scaleX(0)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'transform 1s ease, opacity .6s ease';
+              fsImg.style.transform = 'scaleX(1)';
+              fsImg.style.opacity = '1';
+            });
+          });
+        break;
+
+        case 'scaley':
+          fsImg.style.transform = 'scaleY(0)';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              fsImg.style.transition = 'transform 1s ease, opacity .6s ease';
+              fsImg.style.transform = 'scaleY(1)';
+              fsImg.style.opacity = '1';
+            });
+          });
+        break;
+
+        case 'bounce':
           fsImg.style.opacity = '1';
-        });
-      });
-    break;
+          fsImg.style.animation = 'bounceIn 1.1s ease forwards';
+        break;
 
-    case 'blur':
-  fsImg.style.transition = 'none';
-  fsImg.style.filter = 'blur(15px)';
-  fsImg.style.opacity = '0';
+        case 'rotate3d':
+          fsImg.style.opacity = '1';
+          fsImg.style.animation = 'rotate3dIn 1.1s ease forwards';
+        break;
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fsImg.style.transition = 'filter 1s ease, opacity 1s ease';
-      fsImg.style.filter = 'blur(0px)';
-      fsImg.style.opacity = '1';
-    });
-  });
-break;
+        case 'shutter':
+          fsImg.style.opacity = '1';
+          fsImg.style.transformOrigin = 'center';
+          fsImg.style.animation = 'shutterOpen 1s ease forwards';
+        break;
 
-case 'spin':
-  fsImg.style.transition = 'none';
-  fsImg.style.transform = 'rotate(-360deg) scale(0.3)';
-  fsImg.style.opacity = '0';
+        case 'fade':
+          fsImg.style.transition = 'opacity 1s ease';
+          fsImg.style.opacity = '1';
+        break;
+      }
+    }
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fsImg.style.transition = 'transform 1.2s ease, opacity 1s ease';
-      fsImg.style.transform = 'rotate(0deg) scale(1)';
-      fsImg.style.opacity = '1';
-    });
-  });
+    // تشغيل أول مرة
+    runEffect();
 
-break;
+    // إيقاف أي تكرار قديم
+    if(effectInterval) clearInterval(effectInterval);
 
-case 'flip3d':
-  fsImg.style.transition = 'none';
-  fsImg.style.transform = 'rotateY(180deg) perspective(1000px)';
-  fsImg.style.opacity = '0';
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fsImg.style.transition = 'transform 1.1s ease, opacity 0.8s ease';
-      fsImg.style.transform = 'rotateY(0deg) scale(1)';
-      fsImg.style.opacity = '1';
-    });
-  });
-break;
-case 'scalex':
-  fsImg.style.transition = 'none';
-  fsImg.style.transform = 'scaleX(0)';
-  fsImg.style.opacity = '0';
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fsImg.style.transition = 'transform 1s ease, opacity .6s ease';
-      fsImg.style.transform = 'scaleX(1)';
-      fsImg.style.opacity = '1';
-    });
-  });
-break;
-
-case 'scaley':
-  fsImg.style.transition = 'none';
-  fsImg.style.transform = 'scaleY(0)';
-  fsImg.style.opacity = '0';
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fsImg.style.transition = 'transform 1s ease, opacity .6s ease';
-      fsImg.style.transform = 'scaleY(1)';
-      fsImg.style.opacity = '1';
-    });
-  });
-break;
-
-case 'bounce':
-  fsImg.style.opacity = '0';
-  fsImg.style.transform = 'scale(0.6)';
-  fsImg.style.animation = 'none';
-
-  fsImg.offsetHeight; // ⭐ Very Important
-
-  fsImg.style.opacity = '1';
-  fsImg.style.animation = 'bounceIn 1.1s ease forwards';
-break;
-case 'rotate3d':
-  fsImg.style.opacity = '0';
-  fsImg.style.transform = 'perspective(1000px) rotateY(90deg)';
-  fsImg.style.animation = 'none';
-
-  fsImg.offsetHeight; // 🔥 force reflow
-
-  fsImg.style.opacity = '1';
-  fsImg.style.animation = 'rotate3dIn 1.1s ease forwards';
-break;
-
-case 'shutter':
-  fsImg.style.opacity = '1';
-  fsImg.style.transform = 'scaleY(0)';
-  fsImg.style.transformOrigin = 'center';
-  fsImg.style.animation = 'none';
-
-  fsImg.offsetHeight; // 🔥 Very Important
-
-  fsImg.style.animation = 'shutterOpen 1s ease forwards';
-break;
-
-case 'fade':
-  fsImg.style.transition = 'opacity 1s ease';
-  fsImg.style.opacity = '0';
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fsImg.style.opacity = '1';
-    });
-  });
-break;
-}
-
-
-    // Wait until animation ends then callback
-const duration = effect === 'spin' ? getCurrentSettings().delay : 1000; // 1 second per slide
+    // إعادة التأثير كل 3 ثواني
+    effectInterval = setInterval(runEffect, 3000);
   };
 }
 
-
-function hideFullscreen(){
+ function hideFullscreen(){
   if(!fullscreenOverlay) return;
+
+  // إيقاف التكرار
+  if(effectInterval){
+    clearInterval(effectInterval);
+    effectInterval = null;
+  }
 
   fullscreenOverlay.style.opacity = '0';
   fsImg.style.opacity = '0';

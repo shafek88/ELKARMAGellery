@@ -186,14 +186,23 @@ async function exportVideo() {
     document.querySelectorAll('.masonry-item img')
   ).map(img => img.src).filter(Boolean);
 
+  // ✅ لو مفيش صور
   if (!images.length) {
-    if (exportStatusEl) exportStatusEl.textContent = '⚠️ No images to export';
+    if (exportStatusEl) {
+      exportStatusEl.textContent = '⚠️ No images to export';
+
+      // تختفي بعد 2.5 ثانية
+      setTimeout(() => {
+        exportStatusEl.textContent = '';
+      }, 2500);
+    }
     return;
   }
 
   const { effect, delay, audio } = getCurrentSettings();
-  if (exportStatusEl) exportStatusEl.textContent = '⏳...Exporting video';
+  if (exportStatusEl) exportStatusEl.textContent = '⏳ Exporting video...';
 
+  // تنظيف أي تسجيل قديم
   if (window.currentRecorder) {
     window.currentRecorder.stream.getTracks().forEach(track => track.stop());
     window.currentRecorder = null;
@@ -205,43 +214,44 @@ async function exportVideo() {
     window.currentAudio = null;
   }
 
-  const stream = canvas.captureStream(60); // فيديو فقط
+  // Stream الفيديو
+  const stream = canvas.captureStream(60);
 
   let audioStream = null;
+
   if (audio) {
-    // ⚡ إعداد الصوت للجزء المحدد فقط باستخدام OfflineAudioContext
     const start = parseFloat(audioStart.value) || 0;
     const end   = parseFloat(audioEnd.value) || 0;
-
-    const audioCtx = new AudioContext();
-    const res = await fetch(audio);
-    const buffer = await res.arrayBuffer();
-    const audioBuffer = await audioCtx.decodeAudioData(buffer);
-
     const duration = end - start;
-    const offlineCtx = new OfflineAudioContext(
-      audioBuffer.numberOfChannels,
-      audioCtx.sampleRate * duration,
-      audioCtx.sampleRate
-    );
 
-    const source = offlineCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(offlineCtx.destination);
-    source.start(0, start, duration);
+    if (duration > 0) {
+      const audioCtx = new AudioContext();
+      const res = await fetch(audio);
+      const buffer = await res.arrayBuffer();
+      const audioBuffer = await audioCtx.decodeAudioData(buffer);
 
-    const rendered = await offlineCtx.startRendering();
+      const offlineCtx = new OfflineAudioContext(
+        audioBuffer.numberOfChannels,
+        audioCtx.sampleRate * duration,
+        audioCtx.sampleRate
+      );
 
-    // تحويل الـ AudioBuffer الم rendu إلى MediaStream
-    const dest = audioCtx.createMediaStreamDestination();
-    const srcNode = audioCtx.createBufferSource();
-    srcNode.buffer = rendered;
-    srcNode.connect(dest);
-    srcNode.start();
-    audioStream = dest.stream;
+      const source = offlineCtx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(offlineCtx.destination);
+      source.start(0, start, duration);
 
-    // أضف مسار الصوت للـ MediaRecorder
-    audioStream.getAudioTracks().forEach(track => stream.addTrack(track));
+      const rendered = await offlineCtx.startRendering();
+
+      const dest = audioCtx.createMediaStreamDestination();
+      const srcNode = audioCtx.createBufferSource();
+      srcNode.buffer = rendered;
+      srcNode.connect(dest);
+      srcNode.start();
+
+      audioStream = dest.stream;
+      audioStream.getAudioTracks().forEach(track => stream.addTrack(track));
+    }
   }
 
   const recorder = new MediaRecorder(stream, {
@@ -251,20 +261,24 @@ async function exportVideo() {
 
   window.currentRecorder = recorder;
   const chunks = [];
+
   recorder.ondataavailable = e => chunks.push(e.data);
 
   recorder.onstop = () => {
     const blob = new Blob(chunks, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
+
     if (exportStatusEl) {
       exportStatusEl.innerHTML =
         `✅ WebM ready! <a href="${url}" download="karma-video.webm">Download WebM</a>`;
     }
+
     window.currentRecorder = null;
   };
 
   recorder.start();
 
+  // رسم الفريمات
   for (const img of images) {
     await drawFrame(ctx, img, effect, delay);
   }
