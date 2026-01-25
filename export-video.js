@@ -171,56 +171,76 @@ async function drawFrame(ctx, imgSrc, effect, frameDuration) {
 async function exportVideo() {
   const canvas = document.getElementById('exportCanvas');
   const ctx = canvas.getContext('2d');
-
   const exportStatusEl = document.getElementById('exportStatus');
 
-  // تنظيف كامل قبل البدء
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-const width = window.innerWidth;
-const height = window.innerHeight;
-canvas.width = width;
-canvas.height = height;
-canvas.style.width = width + 'px';
-canvas.style.height = height + 'px';
-
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
 
   const images = Array.from(
     document.querySelectorAll('.masonry-item img')
   ).map(img => img.src).filter(Boolean);
 
-  // بدل alert، رسالة فوق الزرار
   if (!images.length) {
-    if (exportStatusEl) {
-      exportStatusEl.textContent = '⚠️ No images to export';
-    }
+    if (exportStatusEl) exportStatusEl.textContent = '⚠️ No images to export';
     return;
   }
 
   const { effect, delay, audio } = getCurrentSettings();
-  exportStatusEl && (exportStatusEl.textContent = '⏳...Exporting video');
+  if (exportStatusEl) exportStatusEl.textContent = '⏳...Exporting video';
 
-  // إيقاف أي MediaRecorder أو audio سابق
   if (window.currentRecorder) {
     window.currentRecorder.stream.getTracks().forEach(track => track.stop());
     window.currentRecorder = null;
   }
+
   if (window.currentAudio) {
     window.currentAudio.pause();
     window.currentAudio.src = '';
     window.currentAudio = null;
   }
 
-  const stream = canvas.captureStream(60);
+  const stream = canvas.captureStream(60); // فيديو فقط
 
-  let audioEl;
+  let audioStream = null;
   if (audio) {
-    audioEl = new Audio(audio);
-    audioEl.loop = true;
-    audioEl.volume = 0; 
-    await audioEl.play().catch(() => {});
-    window.currentAudio = audioEl;
-    const audioStream = audioEl.captureStream();
+    // ⚡ إعداد الصوت للجزء المحدد فقط باستخدام OfflineAudioContext
+    const start = parseFloat(audioStart.value) || 0;
+    const end   = parseFloat(audioEnd.value) || 0;
+
+    const audioCtx = new AudioContext();
+    const res = await fetch(audio);
+    const buffer = await res.arrayBuffer();
+    const audioBuffer = await audioCtx.decodeAudioData(buffer);
+
+    const duration = end - start;
+    const offlineCtx = new OfflineAudioContext(
+      audioBuffer.numberOfChannels,
+      audioCtx.sampleRate * duration,
+      audioCtx.sampleRate
+    );
+
+    const source = offlineCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(offlineCtx.destination);
+    source.start(0, start, duration);
+
+    const rendered = await offlineCtx.startRendering();
+
+    // تحويل الـ AudioBuffer الم rendu إلى MediaStream
+    const dest = audioCtx.createMediaStreamDestination();
+    const srcNode = audioCtx.createBufferSource();
+    srcNode.buffer = rendered;
+    srcNode.connect(dest);
+    srcNode.start();
+    audioStream = dest.stream;
+
+    // أضف مسار الصوت للـ MediaRecorder
     audioStream.getAudioTracks().forEach(track => stream.addTrack(track));
   }
 
@@ -230,7 +250,6 @@ canvas.style.height = height + 'px';
   });
 
   window.currentRecorder = recorder;
-
   const chunks = [];
   recorder.ondataavailable = e => chunks.push(e.data);
 
@@ -241,20 +260,15 @@ canvas.style.height = height + 'px';
       exportStatusEl.innerHTML =
         `✅ WebM ready! <a href="${url}" download="karma-video.webm">Download WebM</a>`;
     }
-
-    // تنظيف بعد الانتهاء
-    if (audioEl) {
-      audioEl.pause();
-      audioEl.src = '';
-      window.currentAudio = null;
-    }
     window.currentRecorder = null;
   };
 
   recorder.start();
+
   for (const img of images) {
     await drawFrame(ctx, img, effect, delay);
   }
+
   recorder.stop();
 }
 

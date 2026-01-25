@@ -1091,37 +1091,83 @@ img.effect-shutter {
               <option value="rotate3d">Rotate 3D</option>
               <option value="shutter">Shutter</option>
             </select>
-            <div id="audioSettings" style="margin-top:12px">
-              <label>🎵 Background Music</label>
-              <select id="audioSelect">
-  <option value="">Select an audio file</option>
-  <option value="local">Upload audio from your device</option>
+           <div id="audioSettings" style="margin-top:12px">
 
-  <!-- English Tracks -->
-  <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">Lost in the Void</option>
-  <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3">At the End of All Things</option>
-  <option value="./music&videos/happy-birthday-155461.mp3">Happy Birthday</option>
-  <option value="./music&videos/Christmas-Magic-chosic.com_.mp3">Christmas Magic</option>
-  <option value="./music&videos/Lady.mp3">Lady</option>
-  <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3">Sunshine Boulevard</option>
-  <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3">Happy Clappy</option>
-  <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3">Moonlight - Scott Buckley</option>
-  <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adrift Among Infinite Stars</option>
-  <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream Up</option>
-  <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Give Me a Smile</option>
+  <label for="audioSelect">🎵 Background Music</label>
 
-  <!-- Arabic / Egyptian Tracks -->
-  <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams El-Zanaty - Hany Shenouda</option>
-  <option value="./music&videos/10NZ39BH.mp3">Afwan Ayyuha Al-Qanun - Omar Khairat</option>
-  <option value="./music&videos/53gp29hm.mp3">Qadiyat Am Ahmed - Omar Khairat</option>
-  <option value="./music&videos/622S72Tc.mp3">Arefa - Omar Khairat</option>
-  <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa - Omar Khairat</option>
-  <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader - El Essily</option>
-  <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy Birthday - Walid Toufic</option>
-</select>
+  <select id="audioSelect">
+    <option value="">Select an audio file</option>
+    <option value="local">Upload audio from your device</option>
 
-              <input type="file" id="audioFileInput" accept="audio/*" style="display:none; margin-top:8px;">
-            </div>            
+    <!-- English Tracks -->
+    <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">Lost in the Void</option>
+    <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3">At the End of All Things</option>
+    <option value="./music&videos/happy-birthday-155461.mp3">Happy Birthday</option>
+    <option value="./music&videos/Christmas-Magic-chosic.com_.mp3">Christmas Magic</option>
+    <option value="./music&videos/Lady.mp3">Lady</option>
+    <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3">Sunshine Boulevard</option>
+    <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3">Happy Clappy</option>
+    <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3">Moonlight - Scott Buckley</option>
+    <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adrift Among Infinite Stars</option>
+    <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream Up</option>
+    <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Give Me a Smile</option>
+
+    <!-- Arabic / Egyptian Tracks -->
+    <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams El-Zanaty – Hany Shenouda</option>
+    <option value="./music&videos/10NZ39BH.mp3">Afwan Ayyuha Al-Qanun – Omar Khairat</option>
+    <option value="./music&videos/53gp29hm.mp3">Qadiyat Am Ahmed – Omar Khairat</option>
+    <option value="./music&videos/622S72Tc.mp3">Arefa – Omar Khairat</option>
+    <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa – Omar Khairat</option>
+    <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader – El Essily</option>
+    <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy Birthday – Walid Toufic</option>
+  </select>
+
+  <!-- Upload local audio -->
+  <input
+    type="file"
+    id="audioFileInput"
+    accept="audio/*"
+    style="display:none; margin-top:8px;"
+  >
+
+  <!-- Time inputs -->
+  <div id="audioRangeControls" style="margin-top:10px">
+
+    <div>
+      <label for="audioStart">⏱ Start (sec)</label>
+      <input type="number" id="audioStart" value="0" min="0" step="0.1">
+    </div>
+
+    <div style="margin-top:6px">
+      <label for="audioEnd">⏹ End (sec)</label>
+      <input type="number" id="audioEnd" value="0" min="0" step="0.1">
+    </div>
+
+    <!-- Visual Sliders -->
+    <div style="margin-top:10px">
+      <input type="range" id="startSlider" min="0" value="0">
+      <input type="range" id="endSlider" min="0" value="100">
+    </div>
+
+    <!-- Live time -->
+    <div style="margin-top:6px">
+      ⏱ Current:
+      <span id="currentTime">0.00</span>s /
+      <span id="totalTime">0.00</span>s
+    </div>
+
+    <!-- Controls -->
+    <div style="margin-top:8px">
+      <button id="playAudio" type="button">▶ Play</button>
+      <button id="pauseAudio" type="button">⏸ Pause</button>
+      <button id="loopToggle" type="button">🔁 Loop: ON</button>
+      <button id="exportAudio" type="button">✂️ Export</button>
+    </div>
+
+  </div>
+
+</div>
+        
             <div style="margin-top:8px;display:flex;gap:8px">
               <button id="btnSaveSettings" class="btn-ghost">Save Settings</button>
              <button id="btnResetSettings" class="btn-ghost">Restore Default</button>
@@ -1660,52 +1706,234 @@ function startExperience() {
   if(wf) wf.style.display = "none";
   if(sc) sc.style.display = "block";
 }
-// audia files uplod
+// ==========================
+// Audio Core
+// ==========================
 const audioSelect = document.getElementById('audioSelect');
 const audioFileInput = document.getElementById('audioFileInput');
 
-let selectedAudioSrc = ""; // Final audio file URL
-let audioPlayer = new Audio(); // Audio player
+const audioStart = document.getElementById('audioStart');
+const audioEnd   = document.getElementById('audioEnd');
 
-// When selecting an option from the list
+const startSlider = document.getElementById('startSlider');
+const endSlider   = document.getElementById('endSlider');
+
+const playBtn  = document.getElementById('playAudio');
+const pauseBtn = document.getElementById('pauseAudio');
+const loopBtn  = document.getElementById('loopToggle');
+const exportBtn = document.getElementById('exportAudio');
+
+const currentTimeEl = document.getElementById('currentTime');
+const totalTimeEl   = document.getElementById('totalTime');
+
+let audioPlayer = new Audio();
+let selectedAudioSrc = "";
+let loopEnabled = true;
+
+// ==========================
+// Select audio
+// ==========================
 audioSelect.addEventListener('change', () => {
-  if(audioSelect.value === "local"){
-    audioFileInput.click(); // Open file selection window
-  } else {
-    // Select from pre-existing files
-    selectedAudioSrc = audioSelect.value;
-    audioPlayer.src = selectedAudioSrc;
-    audioPlayer.loop = true;
+  if (audioSelect.value === "local") {
+    audioFileInput.click();
+    return;
   }
+
+  if (!audioSelect.value) return;
+
+  selectedAudioSrc = audioSelect.value;
+  audioPlayer.src = selectedAudioSrc;
 });
 
-// When selecting a file from the device
+// ==========================
+// Upload local audio
+// ==========================
 audioFileInput.addEventListener('change', () => {
   const file = audioFileInput.files[0];
   if (!file) return;
 
-  // Create audio URL
   selectedAudioSrc = URL.createObjectURL(file);
   audioPlayer.src = selectedAudioSrc;
-  audioPlayer.loop = true;
 
-  // Check if there is an option for local audio
   let localOption = audioSelect.querySelector('option[data-local="true"]');
-
-  // If not present → create it
   if (!localOption) {
     localOption = document.createElement('option');
     localOption.dataset.local = "true";
     audioSelect.appendChild(localOption);
   }
 
-  // Update the file name in the list
   localOption.value = selectedAudioSrc;
   localOption.textContent = `🎵 ${file.name}`;
-
-  // Automatically select it
   audioSelect.value = selectedAudioSrc;
 });
+
+// ==========================
+// When metadata loaded
+// ==========================
+audioPlayer.addEventListener('loadedmetadata', () => {
+  const duration = audioPlayer.duration;
+
+  audioStart.max = duration;
+  audioEnd.max   = duration;
+  audioEnd.value = duration;
+
+  startSlider.max = duration;
+  endSlider.max   = duration;
+
+  startSlider.value = 0;
+  endSlider.value   = duration;
+
+  totalTimeEl.textContent = duration.toFixed(2);
+});
+
+// ==========================
+// Sliders ↔ inputs sync
+// ==========================
+startSlider.addEventListener('input', () => {
+  if (+startSlider.value >= +endSlider.value) {
+    startSlider.value = endSlider.value - 0.1;
+  }
+  audioStart.value = startSlider.value;
+});
+
+endSlider.addEventListener('input', () => {
+  if (+endSlider.value <= +startSlider.value) {
+    endSlider.value = +startSlider.value + 0.1;
+  }
+  audioEnd.value = endSlider.value;
+});
+
+// ==========================
+// Play / Pause
+// ==========================
+playBtn.addEventListener('click', () => {
+  audioPlayer.currentTime = parseFloat(audioStart.value) || 0;
+  audioPlayer.play();
+});
+
+pauseBtn.addEventListener('click', () => {
+  audioPlayer.pause();
+});
+
+// ==========================
+// Loop + Live time
+// ==========================
+audioPlayer.addEventListener('timeupdate', () => {
+  currentTimeEl.textContent = audioPlayer.currentTime.toFixed(2);
+
+  const start = parseFloat(audioStart.value) || 0;
+  const end   = parseFloat(audioEnd.value) || audioPlayer.duration;
+
+  if (audioPlayer.currentTime >= end) {
+    if (loopEnabled) {
+      audioPlayer.currentTime = start;
+      audioPlayer.play();
+    } else {
+      audioPlayer.pause();
+    }
+  }
+});
+
+// ==========================
+// Loop toggle
+// ==========================
+loopBtn.addEventListener('click', () => {
+  loopEnabled = !loopEnabled;
+  loopBtn.textContent = loopEnabled ? "🔁 Loop: ON" : "⏹ Loop: OFF";
+});
+
+// ==========================
+// Export selected audio ✂️
+// ==========================
+exportBtn.addEventListener('click', async () => {
+  const start = parseFloat(audioStart.value);
+  const end   = parseFloat(audioEnd.value);
+
+  if (end <= start) {
+    alert("Invalid audio range");
+    return;
+  }
+
+  const res = await fetch(audioPlayer.src);
+  const buffer = await res.arrayBuffer();
+  const audioBuffer = await new AudioContext().decodeAudioData(buffer);
+
+  const sampleRate = audioBuffer.sampleRate;
+  const channels = audioBuffer.numberOfChannels;
+  const frameCount = Math.floor((end - start) * sampleRate);
+
+  // 🔹 إنشاء Buffer جديد للجزء المحدد
+  const newBuffer = new AudioContext().createBuffer(channels, frameCount, sampleRate);
+  for (let c = 0; c < channels; c++) {
+    const oldData = audioBuffer.getChannelData(c);
+    const newData = newBuffer.getChannelData(c);
+    const startSample = Math.floor(start * sampleRate);
+    for (let i = 0; i < frameCount; i++) {
+      newData[i] = oldData[startSample + i];
+    }
+  }
+
+  // 🔹 إنشاء OfflineAudioContext بنفس طول الـ buffer الجديد
+  const offlineCtx = new OfflineAudioContext(
+    channels,
+    newBuffer.length,
+    sampleRate
+  );
+
+  const source = offlineCtx.createBufferSource();
+  source.buffer = newBuffer;
+  source.connect(offlineCtx.destination);
+  source.start(0);
+
+  const rendered = await offlineCtx.startRendering();
+  const wavBlob = bufferToWav(rendered);
+
+  const url = URL.createObjectURL(wavBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'audio-cut.wav';
+  a.click();
+});
+
+// ==========================
+// Helper: AudioBuffer → WAV
+// ==========================
+function bufferToWav(buffer) {
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const length = buffer.length * numChannels * 2 + 44;
+  const arrayBuffer = new ArrayBuffer(length);
+  const view = new DataView(arrayBuffer);
+
+  let offset = 0;
+  const writeString = s => { for (let i = 0; i < s.length; i++) view.setUint8(offset++, s.charCodeAt(i)); };
+
+  writeString('RIFF');
+  view.setUint32(offset, 36 + buffer.length * numChannels * 2, true); offset += 4;
+  writeString('WAVEfmt ');
+  view.setUint32(offset, 16, true); offset += 4;
+  view.setUint16(offset, 1, true); offset += 2; // PCM
+  view.setUint16(offset, numChannels, true); offset += 2;
+  view.setUint32(offset, sampleRate, true); offset += 4;
+  view.setUint32(offset, sampleRate * numChannels * 2, true); offset += 4; // byte rate
+  view.setUint16(offset, numChannels * 2, true); offset += 2; // block align
+  view.setUint16(offset, 16, true); offset += 2; // bits per sample
+  writeString('data');
+  view.setUint32(offset, buffer.length * numChannels * 2, true); offset += 4;
+
+  // كتابة بيانات كل قناة بالتوازي
+  for (let i = 0; i < buffer.length; i++) {
+    for (let c = 0; c < numChannels; c++) {
+      let sample = buffer.getChannelData(c)[i];
+      sample = Math.max(-1, Math.min(1, sample));
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+      offset += 2;
+    }
+  }
+
+  return new Blob([view], { type: 'audio/wav' });
+}
+
 
 /* ============================
    Deny access
@@ -1770,23 +1998,28 @@ function getCurrentSettings(){
 }
 
 
-/* ============================
-   Save settings
-   ============================ */
-   btnSaveSettings && btnSaveSettings.addEventListener('click', () => {
+// ============================
+// Save settings (حفظ الجزء المحدد)
+// ============================
+btnSaveSettings && btnSaveSettings.addEventListener('click', () => {
+  const start = parseFloat(audioStart.value) || 0;
+  const end   = parseFloat(audioEnd.value) || audioPlayer.duration;
+
   const delayVal = optDelay ? Number(optDelay.value) || 1100 : 1100;
-  let raw = optEffect ? optEffect.value : 'zoom';
-  raw = raw.trim().toLowerCase();
-  const effectVal = ['zoom','fade','slide','blur','spin','flip3d','scalex','scaley','bounce','rotate3d','shutter'].includes(raw) ? raw : 'zoom';
+  let rawEffect = optEffect ? optEffect.value.trim().toLowerCase() : 'zoom';
+  const effectVal = ['zoom','fade','slide','blur','spin','flip3d','scalex','scaley','bounce','rotate3d','shutter'].includes(rawEffect) ? rawEffect : 'zoom';
 
-  saveToLS(LS_SETTINGS, { delay: delayVal, effect: effectVal, audio: selectedAudioSrc });
+  // === Save all settings to localStorage ===
+  saveToLS(LS_SETTINGS, {
+    delay: delayVal,
+    effect: effectVal,
+    audio: selectedAudioSrc,
+    start: start,
+    end: end
+  });
 
-  if(isPlaying){
-    clearTimeout(window.__revealTimer);
-    revealNext();
-  };
-  //Create message will show after save setting is clicked
-   const messageEl = document.createElement('span');
+  // === Show message ===
+  const messageEl = document.createElement('span');
   messageEl.textContent = '! Settings have been saved';
   Object.assign(messageEl.style, {
     position: 'absolute',
@@ -1804,30 +2037,38 @@ function getCurrentSettings(){
     display: 'inline-block',
     zIndex: 1000
   });
-
-  btnSaveSettings.parentElement.style.position = 'relative'; 
+  btnSaveSettings.parentElement.style.position = 'relative';
   btnSaveSettings.parentElement.appendChild(messageEl);
 
-  setTimeout(() => {
-    messageEl.remove();
-  }, 2000);
+  setTimeout(() => messageEl.remove(), 2000);
 });
 
 
-/* ============================
-   Reset settings
-   ============================ */
-btnResetSettings && btnResetSettings.addEventListener('click', ()=>{
-  if(optDelay) optDelay.value = 1100; 
+// ============================
+// Reset settings (ارجاع كل شيء)
+// ============================
+btnResetSettings && btnResetSettings.addEventListener('click', () => {
+  // === Audio reset ===
+  audioStart.value = 0;
+  startSlider.value = 0;
+  audioEnd.value = audioPlayer.duration;
+  endSlider.value = audioPlayer.duration;
+
+  // === Effect settings reset ===
+  if(optDelay) optDelay.value = 1100;
   if(optEffect) optEffect.value = 'zoom';
-  saveToLS(LS_SETTINGS, {delay:1100,effect:'zoom'});
 
-  if(isPlaying){
-    clearTimeout(window.__revealTimer);
-    revealNext();
-  }
+  // === Save defaults to localStorage ===
+  saveToLS(LS_SETTINGS, {
+    delay: 1100,
+    effect: 'zoom',
+    audio: selectedAudioSrc,
+    start: 0,
+    end: audioPlayer.duration
+  });
 
-const messageEl = document.createElement('span');
+  // === Show message ===
+  const messageEl = document.createElement('span');
   messageEl.textContent = '! Default settings restored';
   Object.assign(messageEl.style, {
     position: 'absolute',
@@ -1845,14 +2086,12 @@ const messageEl = document.createElement('span');
     display: 'inline-block',
     zIndex: 1000
   });
-
   btnResetSettings.parentElement.style.position = 'relative';
   btnResetSettings.parentElement.appendChild(messageEl);
 
   setTimeout(() => {
     messageEl.remove();
   }, 2000);
-
 });
 
 /* ============================
@@ -1862,19 +2101,17 @@ const messageEl = document.createElement('span');
   // 🔹 تحقق من وجود صور
   const imgs = masonry.querySelectorAll('.masonry-item img');
   const hasValidImg = Array.from(imgs).some(img => img.src || img.dataset.fullsrc);
-  
+
   if(!hasValidImg){
-    // عرض رسالة بديلة للـ alert
     showMessage("!! No images found. Please upload at least one image to start the slideshow.", btnStart);
     
-    // 🔹 إخفاء أي أزرار عائمة ظهرت سابقًا
     const floatingControls = document.getElementById("floatingControls");
     floatingControls && floatingControls.classList.remove("active");
     
     const fullscreenBtn = document.getElementById("fullscreenBtn");
     fullscreenBtn && fullscreenBtn.classList.remove("active");
     
-    return; // ❌ توقف نهائي
+    return;
   }
 
   // 🔹 تأكيد تحميل الصور قبل العرض
@@ -1901,9 +2138,13 @@ const messageEl = document.createElement('span');
   const floatingControls = document.getElementById("floatingControls");
   if(floatingControls) floatingControls.classList.add("active");
 
-  // 🔹 تشغيل الصوت لو موجود
+  // 🔹 تشغيل الصوت حسب الجزء المحدد
   if(selectedAudioSrc){
+    audioPlayer.currentTime = parseFloat(audioStart.value) || 0;
     audioPlayer.play().catch(e => console.log("Audio playback issue:", e));
+    
+    // 🔹 تكرار الجزء المحدد فقط لو loop مفعل
+    loopEnabled = loop; // من الكود الجديد
   }
 
   // 🔹 إخفاء Scrollbar عند بدء العرض
@@ -1918,6 +2159,7 @@ const messageEl = document.createElement('span');
   if(btnResume) btnResume.classList.add('hidden');
   statusEl && (statusEl.textContent = 'Displaying');
 }
+
 
 
 /* ============================
