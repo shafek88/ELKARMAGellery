@@ -395,14 +395,6 @@ input,textarea,select{
 }
 .modal h3{color:var(--gold); margin:0 0 8px}
 
-#welcomeForm{text-align:center;padding:50px 20px}
-#welcomeForm input{width:280px;padding:12px;margin:10px 0;border:none;border-radius:8px}
-#welcomeForm button{padding:12px 25px;margin:10px;border:none;border-radius:8px;cursor:pointer;font-size:18px}
-.start{background:gold;color:black}
-.no{background:#444;color:#fff}
-
-#blockedMessage{display:none;text-align:center;font-size:24px;padding:40px;cursor:pointer}
-#siteContent{display:none;padding-bottom:100px}
 /* FULLSCREEN IMAGE EFFECTS */
 img.effect-zoom {
   opacity: 0;
@@ -998,17 +990,6 @@ img.effect-shutter {
     font-size: 16px;
   }
 }
-
-/* skip registration */
-#siteContent {
-  display: block;
-}
-
-#welcomeForm,
-#blockedMessage {
-  display: none;
-}
-
 </style>
 </head>
 <!-- EmailJS library -->
@@ -1018,21 +999,6 @@ img.effect-shutter {
   emailjs.init('AiR0x0VopMvn2lOhN');
 </script>
 <body>
-
-   <!-- Fullscreen registration (appears on top until user submits) -->
-   <!-- <div id="welcomeForm">
-    <h2 style="color: gold;">Welcome to ELKARMA Gallery</h2>
-    <input type="text" id="username" placeholder="Enter your name here" />
-    <br>
-    <input type="email" id="email" placeholder="Enter your email" />
-    <br><br>
-    <button class="start" onclick="startExperience()">Sign In ✅</button>
-    <button class="no" onclick="denyAccess()">Not Now</button>
-  </div> -->
-
-<!-- ---------------- Blocked Message ---------------- -->
-<!-- <div id="blockedMessage">❌ Sorry… You cannot access us at the moment.</div> -->
-
   <!-- Header -->
   <div id="siteContent">
     <div class="header" role="banner" aria-label="Header">
@@ -1687,24 +1653,6 @@ function showTemp(el,ms=2000){
 function smoothScrollTo(el){
   if(!document.querySelector(el)) return;
   document.querySelector(el).scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-/* ============================
-   Start experience
-   ============================ */
-function startExperience() {
-  const name = document.getElementById("username").value.trim();
-  const email = document.getElementById("email").value.trim();
-
-  if (name === "" || email === "") { 
-  alert("Please enter your name and email before proceeding."); 
-  return; 
-}
-
-  const wf = document.getElementById("welcomeForm");
-  const sc = document.getElementById("siteContent");
-  if(wf) wf.style.display = "none";
-  if(sc) sc.style.display = "block";
 }
 // ==========================
 // Audio Core
@@ -2420,14 +2368,15 @@ function initLazyImages(){
 }
 
 
+
 /* ============================
    Fullscreen overlay (fixed)
    ============================ */
 let fullscreenOverlay = null;
 let fsImg = null;
 
-function createFullscreenOverlay(){
-  if(fullscreenOverlay) return;
+function createFullscreenOverlay() {
+  if (fullscreenOverlay) return;
 
   fullscreenOverlay = document.createElement('div');
   fullscreenOverlay.style.cssText = `
@@ -2440,6 +2389,7 @@ function createFullscreenOverlay(){
     z-index: 9999;
     opacity: 0;
     transition: opacity .4s ease;
+    cursor: pointer;
   `;
 
   fsImg = document.createElement('img');
@@ -2454,7 +2404,19 @@ function createFullscreenOverlay(){
 
   fullscreenOverlay.appendChild(fsImg);
   document.body.appendChild(fullscreenOverlay);
+
+  // 🔹 Toggle pause/resume عند النقر في أي مكان داخل الـ overlay
+  fullscreenOverlay.addEventListener('click', () => {
+    if (!isPlaying) return; // لو العرض مش شغال → تجاهل
+
+    if (isPaused) {
+      resumePlayback();  // ▶️ استكمال العرض
+    } else {
+      pausePlayback();   // ⏸ إيقاف العرض
+    }
+  });
 }
+
 
 // repeat effects
 let effectInterval = null;
@@ -2715,10 +2677,11 @@ function pausePlayback(){
 
   isPaused = true;
 
-  const floatingControls = document.getElementById("floatingControls");
- if (floatingControls) floatingControls.classList.add("active");
+  if (effectInterval) {
+    clearInterval(effectInterval);
+    effectInterval = null;
+  }
 
- // ⏸ Pause audio
   if(audioPlayer && !audioPlayer.paused){
     audioPlayer.pause();
   }
@@ -2738,9 +2701,13 @@ function resumePlayback(){
 
   isPaused = false;
 
-  // ▶️ Resume audio from the same point
   if(audioPlayer && audioPlayer.paused){
     audioPlayer.play().catch(()=>{});
+  }
+
+  // 🔁 رجّع التأثير
+  if (fullscreenOverlay && fsImg && fsImg.src) {
+    showFullscreen(fsImg.src, getCurrentSettings().effect);
   }
 
   statusEl && (statusEl.textContent = 'Displaying');
@@ -2750,6 +2717,7 @@ function resumePlayback(){
   clearTimeout(window.__revealTimer);
   revealNext();
 }
+
 
 
 
