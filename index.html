@@ -1077,6 +1077,7 @@ img.effect-shutter {
     <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adrift Among Infinite Stars</option>
     <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream Up</option>
     <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Give Me a Smile</option>
+     <option value="./music&videos/Big_Guy.mp3.mp3">Big_Guy-Sponge</option>
 
     <!-- Arabic / Egyptian Tracks -->
     <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams El-Zanaty – Hany Shenouda</option>
@@ -1085,6 +1086,8 @@ img.effect-shutter {
     <option value="./music&videos/622S72Tc.mp3">Arefa – Omar Khairat</option>
     <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa – Omar Khairat</option>
     <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader – El Essily</option>
+     <option value="./music&videos/a_lyaly.mp3.mp3">Ya-lyaly-roby&Ahmed</option>
+      <option value="./music&videos/Matigi.mp3.mp3">Matigi-Mohammad Faoud</option>
     <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy Birthday – Walid Toufic</option>
   </select>
 
@@ -2236,14 +2239,18 @@ fileInput && fileInput.addEventListener('change', async () => {
 /* ============================
    Save images (compressed)
    ============================ */
+let imageWorker = null;
 btnSaveImgs.addEventListener('click', async () => {
+  if (!imageWorker) {
+  imageWorker = new Worker('worker.js');
+}
   const files = Array.from(fileInput.files || []);
   if (!files.length) return showMessage('!! Please select at least one image', btnSaveImgs);
 
   await openDB(); // تأكد IndexedDB جاهز
 
-  const BATCH_SIZE = 20;
-  const CONCURRENCY = 4;
+  const BATCH_SIZE = 50;
+  const CONCURRENCY = 2;
   let startIndex = getProgress();
 
   for (let i = startIndex; i < files.length; i += BATCH_SIZE) {
@@ -2252,15 +2259,13 @@ btnSaveImgs.addEventListener('click', async () => {
     for (let j = 0; j < batch.length; j += CONCURRENCY) {
       const chunk = batch.slice(j, j + CONCURRENCY);
 
-      const worker = new Worker('worker.js');
-      worker.postMessage({ files: chunk });
+      imageWorker.postMessage({ files: chunk });
 
-      const blobs = await new Promise(resolve => {
-        worker.onmessage = (e) => {
-          worker.terminate();
-          resolve(e.data);
-        };
-      });
+const blobs = await new Promise(resolve => {
+  imageWorker.onmessage = (e) => {
+    resolve(e.data);
+  };
+});
 
       for (let item of blobs) {
         if (!item.error) await saveImageToDB(item.blob);
@@ -2275,6 +2280,8 @@ btnSaveImgs.addEventListener('click', async () => {
   fileInput.value = '';
   preview && (preview.innerHTML = '');
   renderMasonry();
+  imageWorker.terminate();
+ imageWorker = null; 
 
   showMessage(`!! Saved ${files.length} images successfully`, btnSaveImgs);
 });
@@ -2308,10 +2315,6 @@ btnClearImgs && btnClearImgs.addEventListener('click', async () => {
   );
 });
 
-
-
-
-
 /* ============================
    Render masonry
    ============================ */
@@ -2322,52 +2325,42 @@ async function renderMasonry(){
   await openDB();
   const all = await getAllImagesFromDB();
 
-  all.forEach((item, idx) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'masonry-item';
+  const fragment = document.createDocumentFragment();
+  const BATCH_SIZE = 50; // عدد الصور في كل دفعة
+  let index = 0;
 
-    const img = document.createElement('img');
+  function renderBatch(){
+    const end = Math.min(index + BATCH_SIZE, all.length);
 
-    const url = URL.createObjectURL(item.blob);
+    for(let i = index; i < end; i++){
+      const item = all[i];
 
-    // ❌ Masonry Grid لازم يظهر فورًا
-    img.src = url;
+      const wrap = document.createElement('div');
+      wrap.className = 'masonry-item';
 
-    // ✅ خزّن للرؤية الكاملة / Slideshow
-    img.dataset.fullsrc = url;
+      const img = document.createElement('img');
+      const url = URL.createObjectURL(item.blob);
 
-    img.alt = `Image ${idx + 1}`;
-    img.className = 'masonry-img'; // بدل lazy-img
+      img.src = url;                 // يظهر فورًا
+      img.dataset.fullsrc = url;     // للعرض الكامل
+      img.alt = `Image ${i + 1}`;
+      img.className = 'masonry-img';
+      img.loading = 'lazy';          // تحسين إضافي بسيط
 
-    wrap.appendChild(img);
-    masonry.appendChild(wrap);
-  });
+      wrap.appendChild(img);
+      fragment.appendChild(wrap);
+    }
+
+    masonry.appendChild(fragment);
+    index = end;
+
+    if(index < all.length){
+      requestAnimationFrame(renderBatch);
+    }
+  }
+
+  renderBatch();
 }
-
-
-function initLazyImages(){
-  const images = document.querySelectorAll('.lazy-img');
-
-  const observer = new IntersectionObserver((entries, observer)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const img = entry.target;
-
-        if(!img.src){
-          img.src = img.dataset.src;
-        }
-
-        observer.unobserve(img);
-      }
-    });
-  },{
-    rootMargin: '300px'
-  });
-
-  images.forEach(img => observer.observe(img));
-}
-
-
 
 /* ============================
    Fullscreen overlay (fixed)
