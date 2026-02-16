@@ -574,7 +574,7 @@ img.effect-shutter {
 
 #floatingControls {
   position: fixed;
-  bottom: 20px;
+  top: 15px;
   left: 20px;
   display: flex;
   gap: 10px;
@@ -585,8 +585,8 @@ img.effect-shutter {
 }
 
 #floatingControls button {
-  background: rgba(0,0,0,0.65);
-  color: #fff;
+  background: white;
+  color: black;
   border: 1px solid rgba(255,255,255,0.25);
   padding: 8px 14px;
   border-radius: 8px;
@@ -816,9 +816,15 @@ img.effect-shutter {
 
 #fullscreenBtn {
   position: fixed;
-  bottom: 20px;
+  bottom: 33px;
   right: 20px;
   opacity: 0;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
   pointer-events: none;
   transition: opacity 0.4s ease;
   z-index: 99999;
@@ -838,6 +844,90 @@ img.effect-shutter {
   opacity: 1;
 }
 
+/* TimeLine */
+#smartTimeline {
+  position: fixed;
+  bottom: 5px; /* فوق floating controls */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%; /* خط مستقيم */
+  height: 15px;
+  background: rgba(255,255,255,0.3); 
+  border-radius: 3px;
+  touch-action: none;
+  opacity: 0;            /* يبدأ مخفي */
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+#smartTimeline.active {
+  opacity: 1;            /* يظهر لما نضيف الكلاس */
+}
+
+#timelineTrack{
+  position:relative;
+  z-index:1;
+  display:flex;
+  height:100%;
+}
+
+.timeline-segment{
+  flex:1;
+  margin:0 2px;
+  background: rgba(255,255,255,0.4);
+  border-radius:4px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.timeline-segment.active{
+  background:white;
+}
+
+#timelineCursor {
+  position: absolute;
+  top: -1px; /* النقطة فوق الشريط */
+  width: 15px;
+  height: 16px;
+  background: white; /* النقطة بيضاء */
+  border: 2px solid gold;
+  border-radius: 20%;
+  transition: left 0.2s ease;
+  z-index: 10001;
+}
+
+#timelinePreview{
+  position:absolute;
+  bottom:20px;
+  left:0;
+  transform:translateX(-50%) scale(0.9);
+  width:90px;
+  height:65px;
+  border-radius:8px;
+  overflow:hidden;
+  opacity:0;
+  pointer-events:none;
+  transition:0.2s ease;
+  background:black;
+  z-index:10000;
+}
+
+#timelinePreview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#timelineProgress{
+  position:absolute;
+  left:0;
+  top:0;
+  height:100%;
+  width:0%;
+  background: gold;
+  border-radius:3px;
+  transition: width 0.2s linear;
+  z-index:0;
+}
 
 
 /* ===== Responsive Header and Menu ===== */
@@ -1187,6 +1277,16 @@ img.effect-shutter {
            <span id="exportStatus"></span>
           </div>
 
+          <!-- SMART TIMELINE -->
+          <div id="smartTimeline">
+            <div id="timelineProgress"></div>
+            <div id="timelineTrack"></div>
+            <div id="timelineCursor"></div>
+            <div >
+            <img id="timelinePreview" src="">
+            </div>
+         </div>
+            
           <div id="show" class="masonry" style="margin-top:14px;min-height:220px"></div>
 
           <div id="socials" class="social-card">
@@ -1245,9 +1345,7 @@ img.effect-shutter {
 
   <!-- ===== Floating Controls ===== -->
   <div id="floatingControls">
-    <button id="fcPause" aria-label="Pause">⏸</button>
-    <button id="fcResume" aria-label="Play">▶</button>
-   <button id="fcStop" aria-label="Stop">⏹</button>
+   <button id="fcStop" aria-label="Stop">X</button>
 </div>
 
 <button id="fullscreenBtn">⛶</button>
@@ -2048,7 +2146,7 @@ btnResetSettings && btnResetSettings.addEventListener('click', () => {
 /* ============================
    Start playback
    ============================ */
-   function startPlayback(loop = false){
+  function startPlayback(loop = false){
   // 🔹 تحقق من وجود صور
   const imgs = masonry.querySelectorAll('.masonry-item img');
   const hasValidImg = Array.from(imgs).some(img => img.src || img.dataset.fullsrc);
@@ -2077,11 +2175,12 @@ btnResetSettings && btnResetSettings.addEventListener('click', () => {
   // 🔹 إعداد التحكم العائم + المؤشر
   allowFloatingControls = true;
   isLoopMode = loop;
+  timelinePlayIndex = 0;
   playIndex = 0;
   isPlaying = true;
   isPaused = false;
-  setupFloatingControls(); // تشغيل المؤقت + الاستماع للماوس
-
+  setupFloatingControls();
+  setupSmartTimelineAutoHide()
   // 🔹 أزرار التحكم تظهر الآن فقط
   const fullscreenBtn = document.getElementById("fullscreenBtn");
   fullscreenBtn && fullscreenBtn.classList.add("active");
@@ -2089,13 +2188,22 @@ btnResetSettings && btnResetSettings.addEventListener('click', () => {
   const floatingControls = document.getElementById("floatingControls");
   if(floatingControls) floatingControls.classList.add("active");
 
+  /* =========================
+     ⭐️ إظهار التايم لاين هنا
+     ========================= */
+  const timelineContainer = document.getElementById("smartTimeline");
+  if(timelineContainer){
+    timelineContainer.classList.add("active");              // إنشاء عناصر التايم لاين
+  updateTimeline(0);               // تحديث المؤشر لأول صورة
+  setupSmartTimelineAutoHide();
+  }
+
   // 🔹 تشغيل الصوت حسب الجزء المحدد
   if(selectedAudioSrc){
     audioPlayer.currentTime = parseFloat(audioStart.value) || 0;
     audioPlayer.play().catch(e => console.log("Audio playback issue:", e));
     
-    // 🔹 تكرار الجزء المحدد فقط لو loop مفعل
-    loopEnabled = loop; // من الكود الجديد
+    loopEnabled = loop;
   }
 
   // 🔹 إخفاء Scrollbar عند بدء العرض
@@ -2110,7 +2218,6 @@ btnResetSettings && btnResetSettings.addEventListener('click', () => {
   if(btnResume) btnResume.classList.add('hidden');
   statusEl && (statusEl.textContent = 'Displaying');
 }
-
 
 
 /* ============================
@@ -2192,7 +2299,7 @@ fileInput.addEventListener('change', clearProgress); // لو غيرت الملف
 /* ============================
    Compress imges
    ============================ */
-async function compressImageFast(file, maxWidth = 1280, quality = 0.75) {
+async function compressImage(file, maxWidth = 1280, quality = 0.75) {
   const bitmap = await createImageBitmap(file);
 
   const scale = Math.min(1, maxWidth / bitmap.width);
@@ -2315,52 +2422,6 @@ btnClearImgs && btnClearImgs.addEventListener('click', async () => {
   );
 });
 
-/* ============================
-   Render masonry
-   ============================ */
-async function renderMasonry(){
-  if(!masonry) return;
-
-  masonry.innerHTML = '';
-  await openDB();
-  const all = await getAllImagesFromDB();
-
-  const fragment = document.createDocumentFragment();
-  const BATCH_SIZE = 50; // عدد الصور في كل دفعة
-  let index = 0;
-
-  function renderBatch(){
-    const end = Math.min(index + BATCH_SIZE, all.length);
-
-    for(let i = index; i < end; i++){
-      const item = all[i];
-
-      const wrap = document.createElement('div');
-      wrap.className = 'masonry-item';
-
-      const img = document.createElement('img');
-      const url = URL.createObjectURL(item.blob);
-
-      img.src = url;                 // يظهر فورًا
-      img.dataset.fullsrc = url;     // للعرض الكامل
-      img.alt = `Image ${i + 1}`;
-      img.className = 'masonry-img';
-      img.loading = 'lazy';          // تحسين إضافي بسيط
-
-      wrap.appendChild(img);
-      fragment.appendChild(wrap);
-    }
-
-    masonry.appendChild(fragment);
-    index = end;
-
-    if(index < all.length){
-      requestAnimationFrame(renderBatch);
-    }
-  }
-
-  renderBatch();
-}
 
 /* ============================
    Fullscreen overlay (fixed)
@@ -2398,24 +2459,25 @@ function createFullscreenOverlay() {
   fullscreenOverlay.appendChild(fsImg);
   document.body.appendChild(fullscreenOverlay);
 
-  // 🔹 Toggle pause/resume عند النقر في أي مكان داخل الـ overlay
+  // 🔹 Toggle pause/resume عند النقر
   fullscreenOverlay.addEventListener('click', () => {
-    if (!isPlaying) return; // لو العرض مش شغال → تجاهل
+    if (!isPlaying) return;
 
-    if (isPaused) {
-      resumePlayback();  // ▶️ استكمال العرض
-    } else {
-      pausePlayback();   // ⏸ إيقاف العرض
-    }
+    if (isPaused) resumePlayback();
+    else pausePlayback();
   });
 }
-
 
 // repeat effects
 let effectInterval = null;
 
-function showFullscreen(src, effect, onComplete){
+function showFullscreen(src, effect, skipEffect = false){
   createFullscreenOverlay();
+
+  if(effectInterval){
+  clearInterval(effectInterval);
+  effectInterval = null;
+}
 
   fsImg.src = src;
 
@@ -2429,11 +2491,29 @@ function showFullscreen(src, effect, onComplete){
 
   fullscreenOverlay.style.display = 'flex';
   fullscreenOverlay.style.opacity = '1';
+
+  const tl = document.getElementById('smartTimeline');
+  if(tl){
+    tl.style.display = 'block';
+    tl.style.zIndex = '10001';
+  }
+
+  //  if(typeof showTimeline === "function"){
+  //   showTimeline();
+  // }
+
+
   keepScreenOn();
-
   fsImg.onload = () => {
+   
+    if(skipEffect){
+    fsImg.style.transition = 'none';
+    fsImg.style.opacity = '1';
+    fsImg.style.transform = 'scale(1)';
+    fsImg.style.filter = 'none';
+    return;
+  }
 
-    // دالة داخلية لإعادة تشغيل نفس التأثير
     function runEffect(){
 
       // RESET قبل كل مرة
@@ -2550,11 +2630,9 @@ function showFullscreen(src, effect, onComplete){
     // تشغيل أول مرة
     runEffect();
 
-    // إيقاف أي تكرار قديم
-    if(effectInterval) clearInterval(effectInterval);
-
-    // إعادة التأثير كل 3 ثواني
-    effectInterval = setInterval(runEffect, 3000);
+    // لا تعيد التكرار إلا في العرض الطبيعي
+    effectInterval = setInterval(runEffect, getLiveSettings().delay || 3000);
+    
   };
 }
 
@@ -2575,50 +2653,584 @@ function showFullscreen(src, effect, onComplete){
     fsImg.src = '';
     fsImg.className = '';
   }, 400);
+
+  if(typeof hideTimeline === "function"){
+    hideTimeline();
+  }
+}
+
+
+// ============================
+// Timeline Variables
+// ============================
+let timelineSegments = [];
+let timelinePaused = false;
+let timelinePlayIndex = 0;
+let timelineTimer = null;
+let isDraggingTimeline = false;
+let fcHideTimer = null;
+let isTimelineVisible = false; // ⭐ احترافي
+let smartTimeline = null;
+let timelineHideTimer = null;
+let allowFloatingTimeline = false;
+
+smartTimeline = document.getElementById('smartTimeline');
+function setupSmartTimelineAutoHide() {
+  const tl = document.getElementById("smartTimeline");
+  if (!tl) return;
+
+  // 🔹 تايمر الاختفاء
+  let timelineHideTimer = null;
+
+  // 🔹 دالة إظهار التايم لاين مع إعادة العد
+  function showTL() {
+    if (timelineHideTimer) clearTimeout(timelineHideTimer);
+
+    tl.classList.add("active");
+    isTimelineVisible = true;
+
+    // اختفاء تلقائي بعد ثانيتين لو الماوس مش فوقه و مش في السحب
+    timelineHideTimer = setTimeout(() => {
+      if (!isDraggingTimeline && !tl.matches(":hover") && isPlaying && !isPaused) {
+        tl.classList.remove("active");
+        isTimelineVisible = false;
+      }
+    }, 2000);
+  }
+
+  // 🔹 إظهار فور التشغيل
+  if (isPlaying) showTL();
+
+  // 🔹 حركة الماوس تظهر التايم لاين
+  if (!window.__timelineMouseBound) {
+    window.__timelineMouseBound = true;
+
+    document.addEventListener("mousemove", () => {
+      if (!isPlaying) return;
+      showTL();
+    });
+  }
+
+  // 🔹 لو الماوس داخل التايم لاين، يمنع الاختفاء
+  tl.addEventListener("mouseenter", () => {
+    if (timelineHideTimer) clearTimeout(timelineHideTimer);
+    tl.classList.add("active");
+    isTimelineVisible = true;
+  });
+
+  // 🔹 لما يخرج الماوس، يبدأ العد للاختفاء
+  tl.addEventListener("mouseleave", () => {
+    if (timelineHideTimer) clearTimeout(timelineHideTimer);
+    timelineHideTimer = setTimeout(() => {
+      if (!isDraggingTimeline && isPlaying && !isPaused) {
+        tl.classList.remove("active");
+        isTimelineVisible = false;
+      }
+    }, 2000);
+  });
+}
+// ============================
+// Enable Timeline Drag
+// ===========================
+if(smartTimeline){
+
+  smartTimeline.addEventListener("dragstart", e => e.preventDefault());
+
+  smartTimeline.addEventListener("pointerdown", e => {
+    if(!isTimelineVisible) return;
+
+    isDraggingTimeline = true;
+    smartTimeline.setPointerCapture(e.pointerId);
+
+    scrub(e);
+  });
+
+  smartTimeline.addEventListener("pointermove", e => {
+    if(!isDraggingTimeline) return;
+    scrub(e);
+  });
+
+  smartTimeline.addEventListener("pointerup", e => {
+    if(!isDraggingTimeline) return;
+
+    isDraggingTimeline = false;
+    smartTimeline.releasePointerCapture(e.pointerId);
+
+    scrub(e, true);
+  });
+
+  smartTimeline.addEventListener("pointercancel", () => {
+    isDraggingTimeline = false;
+  });
+// ============================
+// Helpers
+// ============================
+function getLiveSettings() {
+  return readFromLS(LS_SETTINGS) || {};
+}
+
+function getImages() {
+  return masonry 
+    ? Array.from(masonry.querySelectorAll('.masonry-item img')).reverse()
+    : [];
+}
+
+// ============================
+// Master Time Helpers
+// ============================
+
+// يرجع زمن البداية والنهاية
+function getTimeBounds() {
+
+  const settings = getLiveSettings();
+  const start = Number(settings.start) || 0;
+
+  let end;
+
+  if (audioPlayer && !isNaN(audioPlayer.duration) && audioPlayer.duration > 0) {
+    end = Number(settings.end) || audioPlayer.duration;
+  } else {
+    // لو مفيش صوت نحسب زمن العرض من الصور
+    const imgs = getImages();
+    const delay = Number(settings.delay) || 1100;
+    end = start + (imgs.length * delay) / 1000;
+  }
+
+  return { start, end };
+}
+
+
+// تحويل الزمن الحالي إلى نسبة تقدم
+function getTimeProgress(currentTime) {
+
+  const { start, end } = getTimeBounds();
+
+  const total = Math.max(end - start, 0.001);
+
+  return Math.min(Math.max((currentTime - start) / total, 0), 1);
+}
+
+
+// تحويل نسبة التقدم إلى رقم صورة
+function getImageIndexFromProgress(progress) {
+
+  const imgs = getImages();
+  if (!imgs.length) return 0;
+
+  return Math.floor(progress * (imgs.length - 1));
+}
+
+
+// تحويل رقم صورة إلى زمن
+function getTimeFromIndex(index) {
+
+  const imgs = getImages();
+  if (!imgs.length) return 0;
+
+  const { start, end } = getTimeBounds();
+  const total = end - start;
+
+  const ratio = index / Math.max(imgs.length - 1, 1);
+
+  return start + (total * ratio);
+}
+
+// ============================
+// Timeline Preview
+// ============================
+// عند الضغط على التايم لاين
+function showTimelinePreview(segment, index){
+  const preview = document.getElementById('timelinePreview');
+  const imgs = getImages();
+  if(!imgs[index]) return;
+
+  // 🔹 استخدم الرابط المخزن فقط
+  preview.src = imgs[index].dataset.fullsrc;
+
+  const rect = segment.getBoundingClientRect();
+  const tlRect = smartTimeline.getBoundingClientRect();
+  preview.style.left = (rect.left - tlRect.left + rect.width/2) + 'px';
+  preview.style.opacity = '1';
+  preview.style.transform = 'translateX(-50%) scale(1)';
+}
+
+function playImageAtIndex(index){
+  const url = imageCache.get(index);
+  if(!url) return;
+  showFullscreen(url, getCurrentSettings().effect);
+}
+
+
+
+function hideTimelinePreview(){
+  const preview = document.getElementById('timelinePreview');
+  if(!preview) return;
+  preview.style.opacity = '0';
+}
+
+// ============================
+// Show / Hide Timeline & Controls
+// ============================
+function hideTimeline() {
+  const tl = document.getElementById('smartTimeline');
+  if (!tl) return;
+  tl.classList.remove('active');  // بدل display:none
+  isTimelineVisible = false;
+}
+
+function showTimeline() {
+  const tl = document.getElementById('smartTimeline');
+  if (!tl) return;
+  tl.classList.add('active');     // بدل display:block
+  isTimelineVisible = true;
+}
+
+// ============================
+// Unified play function
+// ============================
+function playImageAtIndex(index, fromTimeline = false, skipEffect = false) {
+
+  const imgs = getImages();
+  if(!imgs[index]) return;
+
+  const cur = imgs[index];
+  const settings = getLiveSettings();
+
+  const effect = settings.effect || 'zoom';
+  const delay = Number(settings.delay) || 3000;
+
+  const audioSrc = settings.audio || selectedAudioSrc;
+  const start = Number(settings.start) || 0;
+  const end = Number(settings.end) || (audioPlayer?.duration || 0);
+
+  // ⭐ مزامنة المؤشرات
+  timelinePlayIndex = index;
+  playIndex = index;
+
+  // منع Scroll
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+
+  // عرض الصورة
+  showFullscreen(cur.dataset.fullsrc || cur.src, effect, skipEffect);
+  
+  // إظهار التايم لاين أثناء العرض
+ showTimeline();
+  // تحديث التايم لاين
+  updateTimeline(index);
+
+  // إظهار التايم لاين
+  if(!isTimelineVisible){
+    showTimeline();
+  }
+
+  // تشغيل الصوت
+  if(audioPlayer && audioSrc){
+
+    if(audioPlayer.src !== audioSrc){
+      audioPlayer.src = audioSrc;
+    }
+
+    if(audioPlayer.readyState < 2){
+      audioPlayer.onloadedmetadata = () => {
+        audioPlayer.currentTime = start;
+        audioPlayer.play().catch(()=>{});
+      };
+    } else {
+      audioPlayer.currentTime = start;
+      audioPlayer.play().catch(()=>{});
+    }
+
+    audioPlayer.ontimeupdate = () => {
+
+  const current = audioPlayer.currentTime;
+  const progress = getTimeProgress(current);
+  const index = getImageIndexFromProgress(progress);
+
+  // تحديث الصورة لو تغيرت
+  if(index !== timelinePlayIndex){
+    timelinePlayIndex = index;
+    playIndex = index;
+
+    const imgs = getImages();
+    if(imgs[index]){
+      const { effect } = getCurrentSettings();
+      showFullscreen(imgs[index].dataset.fullsrc || imgs[index].src, effect, true);
+    }
+
+    updateTimeline(index);
+  }
+
+  // التحكم في نهاية الصوت
+  const { start, end } = getTimeBounds();
+
+  if(current >= end){
+    if(loopEnabled){
+      audioPlayer.currentTime = start;
+    } else {
+      audioPlayer.pause();
+    }
+  }
+};
+
+  }
+
+  // ⭐ إعادة تشغيل slideshow
+  if(!fromTimeline){
+
+  window.__revealTimer = setTimeout(() => {
+    if(!isPaused){
+      revealNext();
+    }
+  }, delay);
+
+}
+}
+
+// ============================
+// Timeline Initialization
+// ============================
+function initSmartTimeline() {
+  const track = document.getElementById('timelineTrack');
+  if (!track) return;
+  track.innerHTML = '';
+  timelineSegments = [];
+
+  const imgs = getImages();
+  if (!imgs.length) return;
+
+  // 🔹 إنشاء preview لو مش موجود
+  let preview = document.getElementById('timelinePreview');
+  if (!preview) {
+    preview = document.createElement('img');
+    preview.id = 'timelinePreview';
+    preview.style.cssText = `
+      position:absolute;
+      bottom:40px;
+      width:120px;
+      height:80px;
+      object-fit:cover;
+      border-radius:6px;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      transform: translateX(-50%) scale(1);
+      z-index:10001;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    `;
+    document.getElementById('smartTimeline').appendChild(preview);
+  }
+
+  imgs.forEach((img, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'timeline-segment';
+
+    // عند الضغط على أي نقطة
+    seg.addEventListener('click', () => seekToIndex(i));
+
+    // عند المرور على أي نقطة
+    seg.addEventListener('mouseenter', (e) => {
+      // نعرض صورة preview الخاصة بالصورة عند هذا index
+      preview.src = img.dataset.fullsrc || img.src;
+
+      // نحسب موقع preview فوق النقطة
+      const rect = seg.getBoundingClientRect();
+      const tlRect = track.getBoundingClientRect();
+      preview.style.left = (rect.left - tlRect.left + rect.width / 2) + 'px';
+      preview.style.opacity = '1';
+      seg.style.transform = 'scale(1.2)';
+    });
+
+    // عند الخروج بالماوس
+    seg.addEventListener('mouseleave', () => {
+      preview.style.opacity = '0';
+      seg.style.transform = 'scale(1)';
+    });
+
+    track.appendChild(seg);
+    timelineSegments.push(seg);
+  });
+
+  updateTimeline(timelinePlayIndex);
+  hideTimeline(); // يبدأ مخفي
+  setupTimelinePreview();
+}
+
+
+function setupTimelinePreview() {
+  const track = document.getElementById('timelineTrack');
+  const preview = document.getElementById('timelinePreview');
+  const imgs = getImages(); // دالة بتجيب جميع الصور في العرض
+
+  if (!track || !preview || !imgs.length) return;
+
+  track.addEventListener('mousemove', (e) => {
+    const rect = track.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    x = Math.max(0, Math.min(x, rect.width)); // نتأكد من داخل الشريط
+
+    // نحسب أي صورة نعرض
+    const index = Math.floor((x / rect.width) * imgs.length);
+    const img = imgs[Math.min(index, imgs.length - 1)];
+
+    // نغير src للـ preview
+    preview.src = img.dataset.fullsrc || img.src;
+
+    // نحرك الصورة للماوس
+    preview.style.left = `${x}px`;
+    preview.style.opacity = '1';
+  });
+
+  track.addEventListener('mouseleave', () => {
+    preview.style.opacity = '0';
+  });
+
+  track.addEventListener('click', (e) => {
+    const rect = track.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const index = Math.floor((x / rect.width) * imgs.length);
+    seekToIndex(Math.min(index, imgs.length - 1));
+  });
+}
+
+// ============================
+// Update Timeline Cursor
+// ============================
+function updateTimeline(index){
+
+  const cursor = document.getElementById('timelineCursor');
+  const progress = document.getElementById('timelineProgress');
+  const imgs = getImages();
+
+  if(!cursor || !imgs.length) return;
+
+  const percent = index / (imgs.length - 1);
+
+  // تحريك النقطة
+  cursor.style.left = (percent * 100) + '%';
+
+  // ملء الشريط Gold
+  if(progress){
+    progress.style.width = (percent * 100) + '%';
+  }
+}
+
+// ============================
+// Seek / Reveal
+// ============================
+function seekToIndex(index){
+
+  clearTimeout(window.__revealTimer)
+
+  if(effectInterval){
+    clearInterval(effectInterval)
+    effectInterval = null
+  }
+
+  timelinePlayIndex = index
+  playIndex = index
+
+  const imgs = getImages()
+  if(!imgs[index]) return
+
+  showFullscreen(
+    imgs[index].dataset.fullsrc || imgs[index].src,
+    getCurrentSettings().effect,
+    true // ⭐ مهم جداً
+  )
+
+  updateTimeline(index)
+
+  if(isPlaying && !isPaused){
+    clearTimeout(window.__revealTimer)
+
+    window.__revealTimer = setTimeout(()=>{
+      revealNext()
+    }, getCurrentSettings().delay)
+  }
+}
+
+
+// ============================
+// Timeline Scrub / Drag
+// ============================
+function scrub(e, commit = false){
+  if(!isTimelineVisible && !isDraggingTimeline) return;
+
+  const imgs = getImages();
+  if(!imgs.length) return;
+
+  const rect = smartTimeline.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const ratio = Math.min(Math.max(x / rect.width, 0), 1);
+
+  const index = Math.floor(ratio * imgs.length);
+
+  // 🔹 تحريك مؤشر الـ timeline فقط
+timelinePlayIndex = index;
+updateTimeline(index);
+
+
+  // 🔹 عرض preview المصغرة فوق النقطة مباشرة
+  const cursor = document.getElementById('timelineCursor');
+  const preview = document.getElementById('timelinePreview');
+
+  if(preview && cursor){
+    preview.src = imgs[index].dataset.fullsrc || imgs[index].src;
+    // خلي preview فوق مؤشر النقطة
+    preview.style.left = cursor.offsetLeft + cursor.offsetWidth / 2 + 'px';
+    preview.style.opacity = '1';
+  }
+
+  // 🔹 التشغيل الحقيقي عند الإفلات
+  if(commit){
+    hideTimelinePreview();
+    seekToIndex(index); // مزامنة الصورة والصوت
+    const time = getTimeFromIndex(index);
+    if(audioPlayer) audioPlayer.currentTime = time;
+  }
+}
+
 }
 
 
 /* ============================
    revealNext (correct timing)
    ============================ */
-function revealNext(){
+function revealNext() {
   const items = Array.from(masonry.querySelectorAll('.masonry-item'));
-
-  if(playIndex >= items.length){
-  if(isLoopMode){
-     playIndex = 0;      // 🔁 Return to the first image
-  }else{
-    stopPlayback(true);
-    return;
+  if (timelinePlayIndex >= items.length) {
+    if (isLoopMode) timelinePlayIndex = 0;
+    else return stopPlayback(true);
   }
-}
 
-
-  const cur = items[playIndex];
+  const currentIndex = timelinePlayIndex;
+  const cur = items[currentIndex];
   const img = cur.querySelector('img');
 
-  if(!img){
-    playIndex++;
+  if (!img) {
+    timelinePlayIndex++;
     return revealNext();
   }
 
-  const { effect, delay } = getCurrentSettings();
-
-  showFullscreen(img.src, effect, () => {
-    if (!isPaused && isPlaying) {
-    revealNext();
+  // توليد رابط Blob جديد إذا انتهت صلاحيته
+  if(!img.dataset.fullsrc){
+    const blobUrl = URL.createObjectURL(img.blob);
+    img.dataset.fullsrc = blobUrl;
   }
-});
 
+  const { effect, delay } = getCurrentSettings();
+  updateTimeline(currentIndex);
+  showFullscreen(img.dataset.fullsrc || img.src, effect);
 
-  playIndex++;
+  timelinePlayIndex++;
+  playIndex = timelinePlayIndex;
 
   clearTimeout(window.__revealTimer);
   window.__revealTimer = setTimeout(() => {
     if(!isPaused) revealNext();
   }, delay);
 }
-
 
 /* ============================
    stop / pause / resume
@@ -2644,25 +3256,23 @@ function revealNext(){
   const floatingControls = document.getElementById("floatingControls");
   if(floatingControls) floatingControls.classList.remove("active");
 
-  // 🔹 إظهار Scrollbar مرة تانية بعد انتهاء العرض
-document.body.style.overflow = '';
-document.documentElement.style.overflow = '';
+  hideTimeline();
 
+  // 🔹 إظهار Scrollbar مرة تانية بعد انتهاء العرض
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
 
   // ✅ Stop audio only when the slideshow ends
   if(finished && audioPlayer){
-  audioPlayer.pause();
-  audioPlayer.currentTime = 0;
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+  }
+
+  // 🔽 الخروج من وضع Fullscreen عند نهاية العرض
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
 }
-
-// 🔽 الخروج من وضع Fullscreen عند نهاية العرض
-if (document.fullscreenElement) {
-  document.exitFullscreen().catch(() => {});
-}
-
-
-}
-
 
 
 function pausePlayback(){
@@ -2683,7 +3293,6 @@ function pausePlayback(){
   btnPause && (btnPause.disabled = true);
   btnResume && btnResume.classList.remove('hidden');
 }
-
 
 function resumePlayback(){
   if(!isPlaying && playIndex < masonry.querySelectorAll('.masonry-item').length){
@@ -2717,6 +3326,43 @@ function resumePlayback(){
 btnStart && btnStart.addEventListener('click', startPlayback);
 btnPause && btnPause.addEventListener('click', pausePlayback);
 btnResume && btnResume.addEventListener('click', resumePlayback);
+
+
+/* ============================
+   Render masonry
+   ============================ */
+// عند التحميل
+async function renderMasonry(){
+  if(!masonry) return;
+
+  masonry.innerHTML = '';
+  await openDB();
+  const all = await getAllImagesFromDB();
+
+  const fragment = document.createDocumentFragment();
+  all.forEach((item, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'masonry-item';
+    const img = document.createElement('img');
+
+    const url = URL.createObjectURL(item.blob); // انشئ الرابط مرة واحدة
+    img.src = url;
+    img.dataset.fullsrc = url; // خزن الرابط في dataset
+    img.dataset.objecturl = url; 
+    img.alt = `Image ${i+1}`;
+    img.className = 'masonry-img';
+    img.loading = 'lazy';
+
+    wrap.appendChild(img);
+    fragment.appendChild(wrap);
+  });
+
+  masonry.appendChild(fragment);
+
+  initSmartTimeline();
+}
+
+
 
 
 /* ============================
@@ -2804,14 +3450,6 @@ window.addEventListener('load', async ()=>{
 });
 
 /* Link buttons to existing functions */
-document.getElementById("fcPause").onclick = () => {
-  if (typeof pausePlayback === "function") pausePlayback();
-};
-
-document.getElementById("fcResume").onclick = () => {
-  if (typeof resumePlayback === "function") resumePlayback();
-};
-
 document.getElementById("fcStop").onclick = () => {
   if (typeof stopPlayback === "function") stopPlayback(true);
 };
