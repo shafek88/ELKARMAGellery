@@ -847,11 +847,11 @@ img.effect-shutter {
 /* TimeLine */
 #smartTimeline {
   position: fixed;
-  bottom: 5px; /* فوق floating controls */
+  bottom: 23px; /* فوق floating controls */
   left: 50%;
   transform: translateX(-50%);
   width: 100%; /* خط مستقيم */
-  height: 15px;
+  height: 3px;
   background: rgba(255,255,255,0.3); 
   border-radius: 3px;
   touch-action: none;
@@ -875,6 +875,7 @@ img.effect-shutter {
   margin:0 2px;
   background: rgba(255,255,255,0.4);
   border-radius:4px;
+  margin-left: -2px;
   cursor:pointer;
   transition:0.3s;
 }
@@ -885,14 +886,15 @@ img.effect-shutter {
 
 #timelineCursor {
   position: absolute;
-  top: -1px; /* النقطة فوق الشريط */
+  top: -6px;
   width: 15px;
   height: 16px;
-  background: white; /* النقطة بيضاء */
+  background: white;
   border: 2px solid gold;
-  border-radius: 20%;
+  border-radius: 50%;
   transition: left 0.2s ease;
   z-index: 10001;
+  margin-left: -3px;
 }
 
 #timelinePreview{
@@ -2713,6 +2715,7 @@ function setupSmartTimelineAutoHide() {
 
   // 🔹 لو الماوس داخل التايم لاين، يمنع الاختفاء
   tl.addEventListener("mouseenter", () => {
+  if (!allowFloatingTimeline || !document.fullscreenElement) return;
     if (timelineHideTimer) clearTimeout(timelineHideTimer);
     tl.classList.add("active");
     isTimelineVisible = true;
@@ -3070,7 +3073,7 @@ function setupTimelinePreview() {
     x = Math.max(0, Math.min(x, rect.width)); // نتأكد من داخل الشريط
 
     // نحسب أي صورة نعرض
-    const index = Math.floor((x / rect.width) * imgs.length);
+    const index = imgs.length - 1 - Math.floor((x / rect.width) * imgs.length);
     const img = imgs[Math.min(index, imgs.length - 1)];
 
     // نغير src للـ preview
@@ -3088,7 +3091,7 @@ function setupTimelinePreview() {
   track.addEventListener('click', (e) => {
     const rect = track.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const index = Math.floor((x / rect.width) * imgs.length);
+    const index = imgs.length - 1 - Math.floor((x / rect.width) * imgs.length);
     seekToIndex(Math.min(index, imgs.length - 1));
   });
 }
@@ -3176,7 +3179,8 @@ updateTimeline(index);
   const preview = document.getElementById('timelinePreview');
 
   if(preview && cursor){
-    preview.src = imgs[index].dataset.fullsrc || imgs[index].src;
+    const realIndex = imgs.length - 1 - index;
+    preview.src = imgs[realIndex].dataset.fullsrc || imgs[realIndex].src;
     // خلي preview فوق مؤشر النقطة
     preview.style.left = cursor.offsetLeft + cursor.offsetWidth / 2 + 'px';
     preview.style.opacity = '1';
