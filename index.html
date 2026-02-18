@@ -595,13 +595,33 @@ img.effect-shutter {
   backdrop-filter: blur(6px);
 }
 
-#floatingControls button:hover {
+#floatingControls #fcStop:hover {
   background: gold;
   color: #000;
 }
 
 /* Only appears when the active class is added */
 #floatingControls.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+button#fcToggle {
+    font-size: 60px;
+    padding: 30px;
+    border-radius: 50%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    opacity: 0;
+    z-index: 20000;
+    background-color: transparent;
+    color: gold;
+}
+
+button#fcToggle.active {
   opacity: 1;
   pointer-events: auto;
 }
@@ -1348,6 +1368,7 @@ img.effect-shutter {
   <!-- ===== Floating Controls ===== -->
   <div id="floatingControls">
    <button id="fcStop" aria-label="Stop">X</button>
+   <button id="fcToggle" aria-label="Toggle Playback">⏸</button>
 </div>
 
 <button id="fullscreenBtn">⛶</button>
@@ -1443,6 +1464,8 @@ const exportStatusEl = document.getElementById('exportStatus');
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 const bannerTrack = document.querySelector('.banner-track');
+
+const fcToggle = document.getElementById("fcToggle");
 
 function showMessage(msg, btnEl, duration = 2000) {
   // لو فيه رسالة قديمة امسحها
@@ -1687,6 +1710,22 @@ function setupFloatingControls() {
 }
 
 
+
+
+fcToggle.onclick = () => {
+
+  if(isPaused){
+    resumePlayback();
+  } else {
+    pausePlayback();
+  }
+
+  updateToggleIcon();
+};
+
+function updateToggleIcon(){
+  fcToggle.textContent = isPaused ? "▶" : "⏸";
+}
 
 // ============================
 // Wake Lock (keep screen on)
@@ -2446,6 +2485,7 @@ function createFullscreenOverlay() {
     opacity: 0;
     transition: opacity .4s ease;
     cursor: pointer;
+    pointer-events: none;
   `;
 
   fsImg = document.createElement('img');
@@ -2462,12 +2502,12 @@ function createFullscreenOverlay() {
   document.body.appendChild(fullscreenOverlay);
 
   // 🔹 Toggle pause/resume عند النقر
-  fullscreenOverlay.addEventListener('click', () => {
-    if (!isPlaying) return;
+  // fullscreenOverlay.addEventListener('click', () => {
+  //   if (!isPlaying) return;
 
-    if (isPaused) resumePlayback();
-    else pausePlayback();
-  });
+  //   if (isPaused) resumePlayback();
+  //   else pausePlayback();
+  // }); //stop by click
 }
 
 // repeat effects
@@ -3284,6 +3324,8 @@ function pausePlayback(){
 
   isPaused = true;
 
+  document.getElementById("fcToggle").classList.add("active");
+
   if (effectInterval) {
     clearInterval(effectInterval);
     effectInterval = null;
@@ -3293,9 +3335,14 @@ function pausePlayback(){
     audioPlayer.pause();
   }
 
+  // ⭐ إخفاء الـ overlay أو وقف التأثيرات
+  if(fullscreenOverlay && fsImg){
+    fsImg.style.transition = 'none';
+    fsImg.style.opacity = '1'; // خلي الصورة ثابتة
+    clearInterval(effectInterval); // أي interval شغال
+  }
+
   statusEl && (statusEl.textContent = 'Paused');
-  btnPause && (btnPause.disabled = true);
-  btnResume && btnResume.classList.remove('hidden');
 }
 
 function resumePlayback(){
@@ -3306,22 +3353,18 @@ function resumePlayback(){
   if(!isPlaying) return;
 
   isPaused = false;
+  document.getElementById("fcToggle").classList.remove("active");
 
   if(audioPlayer && audioPlayer.paused){
     audioPlayer.play().catch(()=>{});
   }
 
-  // 🔁 رجّع التأثير
-  if (fullscreenOverlay && fsImg && fsImg.src) {
+  // ⭐ إعادة تشغيل التأثيرات فقط لما يكون مش Paused
+  if(fullscreenOverlay && fsImg && fsImg.src){
     showFullscreen(fsImg.src, getCurrentSettings().effect);
   }
 
   statusEl && (statusEl.textContent = 'Displaying');
-  btnPause && (btnPause.disabled = false);
-  btnResume && btnResume.classList.add('hidden');
-
-  clearTimeout(window.__revealTimer);
-  revealNext();
 }
 
 
