@@ -89,13 +89,19 @@ a{color:inherit;text-decoration:none}
   box-shadow: 0 8px 30px rgba(0,0,0,0.6);
 }
 .logo{display:flex;align-items:center;gap:8px;}
-.logo .brand{font-family:'Playfair Display',serif;color:var(--gold);
+.logo .brand{
+  font-family:'Playfair Display',serif;
+  color:var(--gold);
+  font-size:20px;
+  font-weight:700;
+}
+
 .logo img{
   height:42px;
   width:auto;
   transition:0.3s ease;
 }
-font-size:20px;font-weight:700}
+
 .logo .tag{font-size:12px;color:#9aa4b2}
 .nav{display:flex;gap:10px;align-items:center}
 .nav .nav-btn{
@@ -188,19 +194,7 @@ font-size:20px;font-weight:700}
   transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
 }
 
-.effect-name {
-  position: absolute;
-  top: 6px;               /* فوق الصورة مباشرة */
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFD700;         /* لون ذهبي زاهي */
-  font-size: 18px;        /* أكبر من السابق */
-  font-weight: 800;       /* أكثر سمك */
-  text-shadow: 3px 3px 5px black; /* بارز وواضح */
-  white-space: nowrap;
-  pointer-events: none;   /* منع تفاعل الماوس مع العنوان */
-  z-index: 2;             /* فوق الصورة */
-}
+
 img.zoom { transform: scale(1); transition: transform 0.5s ease; }
 img.zoom.active { transform: scale(1.2); }
 
@@ -624,6 +618,7 @@ button#fcToggle {
 button#fcToggle.active {
   opacity: 1;
   pointer-events: auto;
+  font-size: 50px;
 }
 
  /* social media show */
@@ -1101,6 +1096,7 @@ button#fcToggle.active {
   .modal p {
     font-size: 16px;
   }
+  
 }
 </style>
 </head>
@@ -1150,12 +1146,12 @@ button#fcToggle.active {
 
         <!-- LEFT PANEL -->
         <aside class="panel" id="leftPanel">
-          <h3>Display Settings & Upload Photos</h3>
+          <h3>Settings & Media</h3>
 
           <div id="settings" style="margin-top:8px">
            <label>⏱ Duration (ms)</label>
             <input id="optDelay" type="number" min="300" value="1100">
-            <label>Display Effect</label>
+            <label>Choose Effect</label>
             <select id="optEffect">
               <option value="zoom">Zoom</option>
               <option value="fade">Fade</option>
@@ -1163,45 +1159,49 @@ button#fcToggle.active {
               <option value="blur">Blur Fade</option>
               <option value="spin">Spin</option>
               <option value="flip3d">Flip 3D</option>
-              <option value="scalex">Scale X (Horizontal Stretch)</option>
-              <option value="scaley">Scale Y (Vertical Stretch)</option>
+              <option value="scalex">Horizontal Stretch</option>
+              <option value="scaley">Vertical Stretch</option>
               <option value="bounce">Bounce</option>
               <option value="rotate3d">Rotate 3D</option>
               <option value="shutter">Shutter</option>
             </select>
            <div id="audioSettings" style="margin-top:12px">
 
-  <label for="audioSelect">🎵 Background Music</label>
+  <label for="audioSelect">🎵 Music</label>
 
   <select id="audioSelect">
-    <option value="">Select an audio file</option>
-    <option value="local">Upload audio from your device</option>
+  <option value="">Select Audio</option>
+  <option value="local">Upload File</option>
 
-    <!-- English Tracks -->
-    <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">Lost in the Void</option>
-    <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3">At the End of All Things</option>
-    <option value="./music&videos/happy-birthday-155461.mp3">Happy Birthday</option>
-    <option value="./music&videos/Christmas-Magic-chosic.com_.mp3">Christmas Magic</option>
-    <option value="./music&videos/Lady.mp3">Lady</option>
-    <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3">Sunshine Boulevard</option>
-    <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3">Happy Clappy</option>
-    <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3">Moonlight - Scott Buckley</option>
-    <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3">Adrift Among Infinite Stars</option>
-    <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3">Dream Up</option>
-    <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3">Give Me a Smile</option>
-     <option value="./music&videos/Big_Guy.mp3.mp3">Big_Guy-Sponge</option>
+  <!-- English Tracks -->
+  <optgroup label="English Tracks">
+    <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3" title="Lost in the Void">Lost in the Void</option>
+    <option value="./music&videos/AtTheEndOfAllThings-chosic.com_.mp3" title="At the End of All Things">At the End of All Things</option>
+    <option value="./music&videos/happy-birthday-155461.mp3" title="Happy Birthday">Happy Birthday</option>
+    <option value="./music&videos/Christmas-Magic-chosic.com_.mp3" title="Christmas Magic">Christmas Magic</option>
+    <option value="./music&videos/Lady.mp3" title="Lady">Lady</option>
+    <option value="./music&videos/Sunshine-Boulevard-chosic.com_.mp3" title="Sunshine Boulevard">Sunshine Boulevard</option>
+    <option value="./music&videos/happy-clappy-ukulele(chosic.com).mp3" title="Happy Clappy">Happy Clappy</option>
+    <option value="./music&videos/scott-buckley-moonlight(chosic.com).mp3" title="Moonlight - Scott Buckley">Moonlight - Scott Buckley</option>
+    <option value="./music&videos/sb_adriftamonginfinitestars(chosic.com).mp3" title="Adrift Among Infinite Stars">Adrift Among Infinite Stars</option>
+    <option value="./music&videos/Roa-Dream-Up(chosic.com).mp3" title="Dream Up">Dream Up</option>
+    <option value="./music&videos/fm-freemusic-give-me-a-smile(chosic.com).mp3" title="Give Me a Smile">Give Me a Smile</option>
+    <option value="./music&videos/Big_Guy.mp3.mp3" title="Big Guy - Sponge">Big Guy - Sponge</option>
+  </optgroup>
 
-    <!-- Arabic / Egyptian Tracks -->
-    <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3">Shams El-Zanaty – Hany Shenouda</option>
-    <option value="./music&videos/10NZ39BH.mp3">Afwan Ayyuha Al-Qanun – Omar Khairat</option>
-    <option value="./music&videos/53gp29hm.mp3">Qadiyat Am Ahmed – Omar Khairat</option>
-    <option value="./music&videos/622S72Tc.mp3">Arefa – Omar Khairat</option>
-    <option value="./music&videos/83Ba95Zy.mp3">Zay El Hawa – Omar Khairat</option>
-    <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3">Enta Teader – El Essily</option>
-     <option value="./music&videos/a_lyaly.mp3.mp3">Ya-lyaly-roby&Ahmed</option>
-      <option value="./music&videos/Matigi.mp3.mp3">Matigi-Mohammad Faoud</option>
-    <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">Happy Birthday – Walid Toufic</option>
-  </select>
+  <!-- Arabic / Egyptian Tracks -->
+  <optgroup label="Arabic / Egyptian Tracks">
+    <option value="./music&videos/موسيقى فيلم شمس الزناتي - هاني شنودة.mp3" title="Shams El-Zanaty – Hany Shenouda">Shams El-Zanaty – Hany Shenouda</option>
+    <option value="./music&videos/10NZ39BH.mp3" title="Afwan Ayyuha Al-Qanun – Omar Khairat">Afwan Ayyuha Al-Qanun – Omar Khairat</option>
+    <option value="./music&videos/53gp29hm.mp3" title="Qadiyat Am Ahmed – Omar Khairat">Qadiyat Am Ahmed – Omar Khairat</option>
+    <option value="./music&videos/622S72Tc.mp3" title="Arefa – Omar Khairat">Arefa – Omar Khairat</option>
+    <option value="./music&videos/83Ba95Zy.mp3" title="Zay El Hawa – Omar Khairat">Zay El Hawa – Omar Khairat</option>
+    <option value="./music&videos/Albumaty.Com.El.Essily.Enta.Teader.mp3" title="Enta Teader – El Essily">Enta Teader – El Essily</option>
+    <option value="./music&videos/a_lyaly.mp3.mp3" title="Ya Lyaly – Roby & Ahmed">Ya Lyaly – Roby & Ahmed</option>
+    <option value="./music&videos/Matigi.mp3.mp3" title="Matigi – Mohammad Faoud">Matigi – Mohammad Faoud</option>
+    <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3" title="Happy Birthday – Walid Toufic">Happy Birthday – Walid Toufic</option>
+  </optgroup>
+</select>
 
   <!-- Upload local audio -->
   <input
@@ -1247,28 +1247,25 @@ button#fcToggle.active {
 
   </div>
 
+<div style="margin-top:8px;display:flex;gap:8px">
+  <button id="btnSaveSettings" class="btn-ghost">💾 Save</button>
+  <button id="btnResetSettings" class="btn-ghost">♻️ Reset</button>
 </div>
-        
-            <div style="margin-top:8px;display:flex;gap:8px">
-              <button id="btnSaveSettings" class="btn-ghost">Save Settings</button>
-             <button id="btnResetSettings" class="btn-ghost">Restore Default</button>
-            </div>
-          </div>
 
-          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+<hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
 
-          <div id="upload" style="margin-top:8px">
-            <label>Select photos (multiple selection allowed)</label>
-            <input id="fileInput" type="file" accept="image/*" multiple>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button id="btnSaveImgs" class="btn-primary">Save Photos</button>
-              <button id="btnClearImgs" class="btn-ghost">Clear Photos</button>
-            </div>
-            <div class="preview" id="preview"></div>
-            <div class="muted tiny" style="margin-top:8px">
-                Photos are saved locally in the browser only (sessionStorage).
-           </div>
-          </div>
+<div id="upload" style="margin-top:8px">
+  <label>Select photos (multiple allowed)</label>
+  <input id="fileInput" type="file" accept="image/*" multiple>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button id="btnSaveImgs" class="btn-primary">💾 Save</button>
+    <button id="btnClearImgs" class="btn-ghost">🗑 Clear</button>
+  </div>
+  <div class="preview" id="preview"></div>
+  <div class="muted tiny" style="margin-top:8px">
+    Photos are saved locally (browser session only).
+  </div>
+</div>
 
           <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
 
@@ -1294,7 +1291,7 @@ button#fcToggle.active {
 
           <div class="controls" style="margin-top:12px">
             <button id="btnStart" class="btn-primary">▶️ Play</button>
-           <button id="btnStartLoop" class="btn-primary">▶️ Continuous</button>
+           <button id="btnStartLoop" class="btn-primary">▶️ Loop</button>
            <button id="btnExportVideo" class="btn-primary">🎬 Export Video</button>
            <span id="exportStatus"></span>
           </div>
@@ -3346,25 +3343,28 @@ function pausePlayback(){
 }
 
 function resumePlayback(){
-  if(!isPlaying && playIndex < masonry.querySelectorAll('.masonry-item').length){
-    isPlaying = true;
-  }
 
   if(!isPlaying) return;
 
   isPaused = false;
-  document.getElementById("fcToggle").classList.remove("active");
+
+  // تغيير الأيقونة
+  fcToggle.textContent = "⏸";
 
   if(audioPlayer && audioPlayer.paused){
     audioPlayer.play().catch(()=>{});
   }
 
-  // ⭐ إعادة تشغيل التأثيرات فقط لما يكون مش Paused
-  if(fullscreenOverlay && fsImg && fsImg.src){
-    showFullscreen(fsImg.src, getCurrentSettings().effect);
-  }
-
   statusEl && (statusEl.textContent = 'Displaying');
+
+  // 🔥 أهم سطر — يكمل عرض الصور
+  revealNext();
+
+  // إخفاء الكنترول بعد ثانية
+  setTimeout(()=>{
+    document.getElementById("floatingControls").classList.remove("active");
+  },1000);
+
 }
 
 
