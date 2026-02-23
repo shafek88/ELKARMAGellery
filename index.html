@@ -641,11 +641,12 @@ img.effect-shutter {
   pointer-events: auto;
 }
 
-button#fcToggle {
+#fcToggle {
     font-size: 60px;
     padding: 30px;
     border-radius: 50%;
     position: fixed;
+    cursor: pointer;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -656,7 +657,7 @@ button#fcToggle {
     color: gold;
 }
 
-button#fcToggle.active {
+#fcToggle.active {
     opacity: 1;
     pointer-events: auto;
     font-size: 40px;
@@ -895,6 +896,7 @@ button#fcToggle.active {
   border-radius: 8px;
   font-size: 14px;
   pointer-events: none;
+  cursor: pointer;
   transition: opacity 0.4s ease;
   z-index: 99999;
 }
@@ -916,11 +918,11 @@ button#fcToggle.active {
 /* TimeLine */
 #smartTimeline {
   position: fixed;
-  bottom: 23px; /* فوق floating controls */
+  bottom: 20px; /* فوق floating controls */
   left: 50%;
   transform: translateX(-50%);
   width: 100%; /* خط مستقيم */
-  height: 3px;
+  height: 6px;
   background: rgba(255,255,255,0.3); 
   border-radius: 3px;
   touch-action: none;
@@ -955,7 +957,7 @@ button#fcToggle.active {
 
 #timelineCursor {
   position: absolute;
-  top: -6px;
+  top: -4px;
   width: 15px;
   height: 16px;
   background: white;
@@ -1463,8 +1465,9 @@ button#fcToggle.active {
   <!-- ===== Floating Controls ===== -->
   <div id="floatingControls">
    <button id="fcStop" aria-label="Stop">X</button>
-   <button id="fcToggle" aria-label="Toggle Playback"></button>
 </div>
+<!-- Stop & resume button -->
+<button id="fcToggle" aria-label="Toggle Playback"></button>
 
 <button id="fullscreenBtn">⛶</button>
 
@@ -1767,47 +1770,48 @@ let controlsHideTimer = null;
 let allowFloatingControls = false;
 
 function setupFloatingControls() {
-  const floatingControls = document.getElementById("floatingControls");
-  if (!floatingControls) return;
 
-  // 🔹 إظهار فورًا مع التشغيل
-  if (allowFloatingControls && isPlaying) {
+  const floatingControls = document.getElementById("floatingControls");
+  const fcToggle = document.getElementById("fcToggle");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+  if (!floatingControls || !fcToggle || !fullscreenBtn) return;
+
+  function showControls() {
     floatingControls.classList.add("active");
-    fullscreenBtn.classList.add("active");
+    fcToggle.classList.add("active");
+    fullscreenBtn.classList.add("active");  // 🔥 أهم سطر
   }
 
-  // 🔹 إخفاء تلقائي بعد ثواني (حتى لو الماوس ما اتحركش)
-  clearTimeout(controlsHideTimer);
-  controlsHideTimer = setTimeout(() => {
+  function hideControls() {
     if (allowFloatingControls && isPlaying && !isPaused) {
       floatingControls.classList.remove("active");
-      fullscreenBtn.classList.remove("active");
+      fcToggle.classList.remove("active");
+      fullscreenBtn.classList.remove("active"); // 🔥 أهم سطر
     }
-  }, 2000);
+  }
 
+  // 🔹 يظهر فورًا عند التشغيل
+  if (allowFloatingControls && isPlaying) {
+    showControls();
+  }
 
-  // 🔹 إظهار عند أي حركة ماوس
+  clearTimeout(controlsHideTimer);
+  controlsHideTimer = setTimeout(hideControls, 2000);
+
   document.addEventListener("mousemove", () => {
-  if (!allowFloatingControls || !isPlaying) return;
+    if (!allowFloatingControls || !isPlaying) return;
 
-  floatingControls.classList.add("active");
-  fullscreenBtn.classList.add("active");
+    showControls();
 
-  clearTimeout(controlsHideTimer);
-  controlsHideTimer = setTimeout(() => {
-    if (allowFloatingControls && isPlaying && !isPaused) {
-      floatingControls.classList.remove("active");
-      fullscreenBtn.classList.remove("active");
-    }
-  }, 2000);
-});
+    clearTimeout(controlsHideTimer);
+    controlsHideTimer = setTimeout(hideControls, 2000);
+  });
 
 }
 
-
-
-
 fcToggle.onclick = () => {
+  console.log("clicked", isPlaying, isPaused);
 
   if(isPaused){
     resumePlayback();
@@ -2315,6 +2319,7 @@ btnResetSettings && btnResetSettings.addEventListener('click', () => {
   playIndex = 0;
   isPlaying = true;
   isPaused = false;
+  updateToggleIcon();
   setupFloatingControls();
   setupSmartTimelineAutoHide()
   // 🔹 أزرار التحكم تظهر الآن فقط
@@ -3421,6 +3426,8 @@ function revealNext() {
 
  const fullscreenBtn = document.getElementById("fullscreenBtn");
  fullscreenBtn && fullscreenBtn.classList.remove("active");
+ const fcToggle = document.getElementById("fcToggle");
+fcToggle && fcToggle.classList.remove("active"); // 🔥 يخفي زر fcToggle
 
   statusEl && (statusEl.textContent = finished ? 'Slideshow ended' : 'Ready');
 
