@@ -583,6 +583,64 @@ img.effect-parallax.active {
   transition: transform 1.6s ease-out, opacity 1.2s ease-out;
 }
 
+/* ===== Light Sweep Effect ===== */
+img.effect-lightsweep {
+  opacity: 0;
+  position: relative;
+}
+
+img.effect-lightsweep.active {
+  opacity: 1;
+  animation: lightsweepAnim 1.5s ease forwards;
+}
+
+@keyframes lightsweepAnim {
+  0% {
+    filter: brightness(0.7);
+    transform: scale(1);
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+/* ===== Glitch Effect ===== */
+img.effect-glitch {
+  opacity: 0;
+  position: relative;
+}
+
+img.effect-glitch.active {
+  opacity: 1;
+  animation: glitchAnim 1s steps(2, end) forwards;
+}
+
+@keyframes glitchAnim {
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-5px, 3px); }
+  40% { transform: translate(5px, -3px); }
+  60% { transform: translate(-3px, 2px); }
+  80% { transform: translate(3px, -2px); }
+  100% { transform: translate(0,0); }
+}
+/* ===== Curtain Reveal Effect ===== */
+img.effect-curtain {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+img.effect-curtain.active {
+  opacity: 1;
+  animation: curtainAnim 1s ease forwards;
+}
+
+@keyframes curtainAnim {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
 /* Smooth animation for all effects */
 /* Transitions for simple effects only */
 img.effect-zoom,
@@ -602,7 +660,10 @@ img.effect-parallax {
 /* Animation effects only */
 img.effect-bounce,
 img.effect-rotate3d,
-img.effect-shutter {
+img.effect-shutter,
+img.effect-lightsweep,
+img.effect-glitch,
+img.effect-curtain{
   transition: none;
 }
 
@@ -625,7 +686,7 @@ img.effect-shutter {
   border: 1px solid rgba(255,255,255,0.25);
   padding: 8px 14px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: clamp(28px, 4vw, 60px);
   cursor: pointer;
   backdrop-filter: blur(6px);
 }
@@ -894,7 +955,7 @@ img.effect-shutter {
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 8px 14px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: clamp(28px, 4vw, 60px);
   pointer-events: none;
   cursor: pointer;
   transition: opacity 0.4s ease;
@@ -1223,6 +1284,9 @@ img.effect-shutter {
               <option value="cinematic">Cinematic</option>
               <option value="kenburns">Ken Burns</option>
               <option value="parallax">Parallax Zoom</option>
+              <option value="lightsweep">Light Sweep</option>
+              <option value="glitch">Glitch</option>
+              <option value="curtain">Curtain Reveal</option>
             </select>
            <div id="audioSettings" style="margin-top:12px">
 
@@ -1233,6 +1297,15 @@ img.effect-shutter {
   <option value="local">Upload File</option>
   <!-- English Tracks -->
   <optgroup label="🎵 English Tracks">
+    <option value="./music&videos/BOOMBOOM.mp3">
+      BOOM-BOOM
+    </option>
+    <option value="./music&videos/SODA.mp3">
+      SODA-HUNTER
+    </option>
+    <option value="./music&videos/FOR-LIFE.mp3">
+      FOR-LIFE
+    </option>
     <option value="./music&videos/Lost-in-the-Void-MASTER(chosic.com).mp3">
       Lost in the Void
     </option>
@@ -1299,6 +1372,18 @@ img.effect-shutter {
     </option>
     <option value="./music&videos/Albumaty.Com.Walid.Toufic.Enzel.Ya.Gameel.mp3">
       Happy Birthday – وليد توفيق
+    </option>
+     <option value="./music&videos/01.Ana_Baashaa_El_Bahr.mp3">
+      انا-بعشق-البحر
+    </option>
+     <option value="./music&videos/02.Tamally_Maak (1).mp3">
+    تملي-معاك
+    </option>
+     <option value="./music&videos/10._Saeat_Bshtak.mp3">
+      ساعات-بشتاق
+    </option>
+    <option value="./music&videos/Albumaty.Com_mhmd_foad_fy_krbk.mp3">
+      في-قربك-محمد-فؤاد
     </option>
   </optgroup>
 </select>
@@ -2196,7 +2281,7 @@ btnSaveSettings && btnSaveSettings.addEventListener('click', () => {
 
   const delayVal = optDelay ? Number(optDelay.value) || 1100 : 1100;
   let rawEffect = optEffect ? optEffect.value.trim().toLowerCase() : 'zoom';
-  const effectVal = ['zoom','fade','slide','blur','spin','flip3d','scalex','scaley','bounce','rotate3d','shutter','cinematic','kenburns','parallax'].includes(rawEffect) ? rawEffect : 'zoom';
+  const effectVal = ['zoom','fade','slide','blur','spin','flip3d','scalex','scaley','bounce','rotate3d','shutter','cinematic','kenburns','parallax','lightsweep','glitch','curtain'].includes(rawEffect) ? rawEffect : 'zoom';
 
   // === Save all settings to localStorage ===
   saveToLS(LS_SETTINGS, {
@@ -2713,6 +2798,21 @@ function showFullscreen(src, effect, skipEffect = false){
           });
         break;
 
+        case 'curtain':
+         fsImg.style.transition = 'none';
+         fsImg.style.opacity = '1';
+         fsImg.style.transformOrigin = 'top';
+        fsImg.style.animation = 'curtainAnim 1s ease forwards';
+      break;
+
+        case 'glitch':
+         fsImg.style.transition = 'none';
+         fsImg.style.opacity = '0';
+         void fsImg.offsetWidth;
+         fsImg.style.opacity = '1';
+         fsImg.style.animation = 'glitchAnim 1s steps(2, end) forwards';
+       break;
+
         case 'flip3d':
           fsImg.style.transform = 'rotateY(180deg) perspective(1000px)';
           requestAnimationFrame(() => {
@@ -2800,6 +2900,13 @@ function showFullscreen(src, effect, skipEffect = false){
         fsImg.style.opacity = '1';
 
         break;
+        case 'lightsweep':
+        fsImg.style.transition = 'none';
+        fsImg.style.opacity = '0';
+        void fsImg.offsetWidth;
+        fsImg.style.opacity = '1';
+        fsImg.style.animation = 'lightsweepAnim 1.5s ease forwards';
+      break;
         case 'fade':
           fsImg.style.transition = 'opacity 1s ease';
           fsImg.style.opacity = '1';
@@ -3510,13 +3617,41 @@ function resumePlayback(){
 
 }
 
-
-
-
 btnStart && btnStart.addEventListener('click', startPlayback);
 btnPause && btnPause.addEventListener('click', pausePlayback);
 btnResume && btnResume.addEventListener('click', resumePlayback);
 
+// التحكم بزرار الكيبورد (Play / Pause)
+document.addEventListener("keydown", function (e) {
+
+  // Space
+  if (e.code === "Space") {
+    e.preventDefault();
+    document.getElementById("fcToggle")?.click();
+  }
+
+  // Enter
+  if (e.code === "Enter") {
+    e.preventDefault();
+    document.getElementById("fcToggle")?.click();
+  }
+
+  // Media Play / Pause
+  if (e.code === "MediaPlayPause") {
+    document.getElementById("fcToggle")?.click();
+  }
+
+});
+
+if ("mediaSession" in navigator) {
+  navigator.mediaSession.setActionHandler("play", function () {
+    document.getElementById("fcToggle")?.click();
+  });
+
+  navigator.mediaSession.setActionHandler("pause", function () {
+    document.getElementById("fcToggle")?.click();
+  });
+}
 
 /* ============================
    Render masonry
@@ -3679,8 +3814,8 @@ document.getElementById('playVideo').addEventListener('click', function (e) {
     border-radius:999px;
     border:none;
     cursor:pointer;
-    background:#fff;
-    color:#000;
+    background:gold;
+    color:#000;s
     font-size:13px;
     z-index:10000;
     transition:.3s;
