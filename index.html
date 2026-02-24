@@ -1895,21 +1895,70 @@ function setupFloatingControls() {
 
 }
 
-fcToggle.onclick = () => {
-  console.log("clicked", isPlaying, isPaused);
+// =======================================
+// 🎬 Unified Play / Pause Controller
+// =======================================
 
-  if(isPaused){
+function handlePlayPause() {
+
+  if (!isPlaying) return;
+
+  const floatingControls = document.getElementById("floatingControls");
+  const fcToggle = document.getElementById("fcToggle");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+  // 🔹 إظهار الكنترول فورًا
+  floatingControls?.classList.add("active");
+  fcToggle?.classList.add("active");
+  fullscreenBtn?.classList.add("active");
+
+  if (isPaused) {
     resumePlayback();
   } else {
     pausePlayback();
   }
 
   updateToggleIcon();
-};
+
+  // 🔥 إعادة ضبط مؤقت الإخفاء
+  clearTimeout(controlsHideTimer);
+
+  if (!isPaused) {
+    controlsHideTimer = setTimeout(() => {
+      if (isPlaying && !isPaused) {
+        floatingControls?.classList.remove("active");
+        fcToggle?.classList.remove("active");
+        fullscreenBtn?.classList.remove("active");
+      }
+    }, 2000);
+  }
+}
+fcToggle.onclick = handlePlayPause;
 
 function updateToggleIcon(){
   fcToggle.textContent = isPaused ? "▶" : "⏸";
 }
+
+// =======================================
+// 🎹 Keyboard Play/Pause
+// =======================================
+
+document.addEventListener("keydown", function (e) {
+
+  const tag = document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+  if (
+    e.code === "Space" ||
+    e.code === "Enter" ||
+    e.code === "MediaPlayPause" ||
+    e.key === "MediaPlayPause"
+  ) {
+    e.preventDefault();
+    handlePlayPause();
+  }
+
+});
 
 // ============================
 // Wake Lock (keep screen on)
@@ -3621,37 +3670,6 @@ btnStart && btnStart.addEventListener('click', startPlayback);
 btnPause && btnPause.addEventListener('click', pausePlayback);
 btnResume && btnResume.addEventListener('click', resumePlayback);
 
-// التحكم بزرار الكيبورد (Play / Pause)
-document.addEventListener("keydown", function (e) {
-
-  // Space
-  if (e.code === "Space") {
-    e.preventDefault();
-    document.getElementById("fcToggle")?.click();
-  }
-
-  // Enter
-  if (e.code === "Enter") {
-    e.preventDefault();
-    document.getElementById("fcToggle")?.click();
-  }
-
-  // Media Play / Pause
-  if (e.code === "MediaPlayPause") {
-    document.getElementById("fcToggle")?.click();
-  }
-
-});
-
-if ("mediaSession" in navigator) {
-  navigator.mediaSession.setActionHandler("play", function () {
-    document.getElementById("fcToggle")?.click();
-  });
-
-  navigator.mediaSession.setActionHandler("pause", function () {
-    document.getElementById("fcToggle")?.click();
-  });
-}
 
 /* ============================
    Render masonry
