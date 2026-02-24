@@ -2308,6 +2308,29 @@ secLinks.forEach(a=>{
     if(optEffect) optEffect.value = s.effect || 'zoom'; 
   }
 })();
+
+// ============================
+// Restore saved audio
+// ============================
+(function restoreAudio(){
+  const s = readFromLS(LS_SETTINGS);
+
+  if(!s || !s.audio){
+    audioSelect.value = "";   // يرجع لـ Select Audio
+    selectedAudioSrc = "";
+    return;
+  }
+
+  selectedAudioSrc = s.audio;
+  audioPlayer.src = selectedAudioSrc;
+
+  const option = [...audioSelect.options].find(o => o.value === selectedAudioSrc);
+  if(option){
+    audioSelect.value = selectedAudioSrc;
+  } else {
+    audioSelect.value = "";
+  }
+})();
 /* ============================
    Helpers: get settings
    ============================ */
