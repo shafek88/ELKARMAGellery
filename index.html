@@ -2364,10 +2364,6 @@ btnSaveSettings && btnSaveSettings.addEventListener('click', () => {
     end: end
   });
 
-    // 🔹 حل مشكلة Loop بعد Save
-  document.activeElement.blur();
-  const btnLoop = document.getElementById("btnStartLoop");
-  btnLoop && (btnLoop.disabled = false);
   // === Show message ===
   const messageEl = document.createElement('span');
   messageEl.textContent = '! Settings have been saved';
@@ -2443,6 +2439,12 @@ btnResetSettings && btnResetSettings.addEventListener('click', () => {
     messageEl.remove();
   }, 2000);
 });
+
+
+  // 🔹 حل مشكلة Loop بعد Save
+  document.activeElement.blur();
+  const btnLoop = document.getElementById("btnStartLoop");
+  btnLoop && (btnLoop.disabled = false);
 
 /* ============================
    Start playback
