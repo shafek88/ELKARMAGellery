@@ -2364,6 +2364,10 @@ btnSaveSettings && btnSaveSettings.addEventListener('click', () => {
     end: end
   });
 
+    // 🔹 حل مشكلة Loop بعد Save
+  document.activeElement.blur();
+  const btnLoop = document.getElementById("btnStartLoop");
+  btnLoop && (btnLoop.disabled = false);
   // === Show message ===
   const messageEl = document.createElement('span');
   messageEl.textContent = '! Settings have been saved';
@@ -3856,7 +3860,7 @@ document.getElementById('playVideo').addEventListener('click', function (e) {
     border:none;
     cursor:pointer;
     background:gold;
-    color:#000;s
+    color:#000;
     font-size:13px;
     z-index:10000;
     transition:.3s;
