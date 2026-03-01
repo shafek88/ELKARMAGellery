@@ -2677,6 +2677,7 @@ fileInput && fileInput.addEventListener('change', async () => {
 
   } catch (err) {
     console.error("Failed:", file.name, err.message);
+    continue;
   }
 }
 });
