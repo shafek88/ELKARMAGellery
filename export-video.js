@@ -1,13 +1,19 @@
 /* =========================
    Helpers: Load Image
    ========================= */
-function loadImage(src) {
+async function loadImage(src) {
+  const res = await fetch(src);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => resolve(img);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
     img.onerror = reject;
-    img.src = src;
+    img.src = url;
   });
 }
 
@@ -18,7 +24,7 @@ function drawCenteredImage(ctx, img) {
   const cw = ctx.canvas.width;
   const ch = ctx.canvas.height;
 
-  const margin = 0.02; // 5% margin
+  const margin = 0.02;
   const maxW = cw * (1 - margin*2);
   const maxH = ch * (1 - margin*2);
 
@@ -30,26 +36,22 @@ function drawCenteredImage(ctx, img) {
   const x = (cw - w) / 2;
   const y = (ch - h) / 2;
 
-  // خلفية كاملة
-  ctx.fillStyle = '#000'; 
+  ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, cw, ch);
 
-  // إطار الصورة
-  ctx.fillStyle = '#000'; 
+  ctx.fillStyle = '#000';
   ctx.fillRect(x-5, y-5, w+10, h+10);
 
-  // رسم الصورة
   ctx.drawImage(img, x, y, w, h);
 
-  // إطار خارجي
-  ctx.strokeStyle = '#fff'; 
+  ctx.strokeStyle = '#fff';
   ctx.lineWidth = 5;
   ctx.strokeRect(x, y, w, h);
 }
 
 /* =========================
    Effects
-   ========================= */
+========================= */
 function zoom(ctx, img, p){ 
   ctx.save(); 
   ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2); 
@@ -143,7 +145,82 @@ function shutter(ctx, img, p){
   ctx.restore(); 
 }
 
-const EFFECTS = { zoom, fade, slide, blur, spin, flip3d, scalex, scaley, bounce, rotate3d, shutter };
+/* ===== Cinematic ===== */
+function cinematic(ctx, img, p){
+  ctx.save();
+  const scale = 1.15 - 0.15*p;
+  const yOffset = 40*(1-p);
+  ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
+  ctx.scale(scale, scale);
+  ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2 + yOffset);
+  ctx.globalAlpha = p;
+  drawCenteredImage(ctx, img);
+  ctx.restore();
+}
+
+/* ===== Ken Burns ===== */
+function kenburns(ctx, img, p){
+  ctx.save();
+  const scale = 1 + 0.12*p;
+  ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
+  ctx.scale(scale, scale);
+  ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2);
+  drawCenteredImage(ctx, img);
+  ctx.restore();
+}
+
+/* ===== Parallax ===== */
+function parallax(ctx, img, p){
+  ctx.save();
+  const scale = 1.2 - 0.2*p;
+  const xOffset = -60*(1-p);
+  const yOffset = 40*(1-p);
+  ctx.translate(ctx.canvas.width/2 + xOffset, ctx.canvas.height/2 + yOffset);
+  ctx.scale(scale, scale);
+  ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2);
+  ctx.globalAlpha = p;
+  drawCenteredImage(ctx, img);
+  ctx.restore();
+}
+
+/* ===== Lightsweep ===== */
+function lightsweep(ctx, img, p){
+  ctx.save();
+  ctx.globalAlpha = p;
+  const brightness = 0.7 + 0.8*p;
+  ctx.filter = `brightness(${brightness})`;
+  drawCenteredImage(ctx, img);
+  ctx.filter = 'none';
+  ctx.restore();
+}
+
+/* ===== Glitch ===== */
+function glitch(ctx, img, p){
+  ctx.save();
+  const xOffset = Math.sin(p*20)*5;
+  const yOffset = Math.cos(p*20)*3;
+  ctx.translate(xOffset, yOffset);
+  drawCenteredImage(ctx, img);
+  ctx.restore();
+}
+
+/* ===== Curtain ===== */
+function curtain(ctx, img, p){
+  ctx.save();
+  ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
+  ctx.scale(1, p);
+  ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2);
+  drawCenteredImage(ctx, img);
+  ctx.restore();
+}
+
+/* =========================
+   Effects Object
+========================= */
+const EFFECTS = {
+  zoom, fade, slide, blur, spin, flip3d, scalex, scaley,
+  bounce, rotate3d, shutter, cinematic, kenburns, parallax, lightsweep, glitch, curtain
+};
 
 /* =========================
    Draw Frame Animation
@@ -265,16 +342,30 @@ async function exportVideo() {
   recorder.ondataavailable = e => chunks.push(e.data);
 
   recorder.onstop = () => {
-    const blob = new Blob(chunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
+  const blob = new Blob(chunks, { type: 'video/webm' });
+  const url = URL.createObjectURL(blob);
 
-    if (exportStatusEl) {
-      exportStatusEl.innerHTML =
-        `✅ WebM ready! <a href="${url}" download="karma-video.webm">Download WebM</a>`;
-    }
+  if (exportStatusEl) {
+    // إنشاء الرابط
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'karma-video.webm';
+    downloadLink.textContent = '✅ Download WebM';
+    exportStatusEl.innerHTML = ''; // إزالة أي نص موجود
+    exportStatusEl.appendChild(downloadLink);
 
-    window.currentRecorder = null;
-  };
+    // حدث عند الضغط على الرابط
+    downloadLink.addEventListener('click', async () => {
+      // إخفاء الزر
+      exportStatusEl.innerHTML = '';
+      
+      // إعادة تشغيل عملية التصدير
+      await exportVideo();
+    });
+  }
+
+  window.currentRecorder = null;
+};
 
   recorder.start();
 
