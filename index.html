@@ -1665,10 +1665,6 @@ const bannerTrack = document.querySelector('.banner-track');
 
 const fcToggle = document.getElementById("fcToggle");
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js");
-};
-
 function showMessage(msg, btnEl, duration = 2000) {
   // لو فيه رسالة قديمة امسحها
   const oldMsg = btnEl.querySelector('.toast-msg');
@@ -3983,5 +3979,13 @@ const dateSpan = document.getElementById('currentDate');
 </script>
 <canvas id="exportCanvas" style="display:none"></canvas>
 <script src="export-video.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js")
+  .then(function() {
+    console.log("Service Worker Registered");
+  });
+}
+</script>
 </body>
 </html>
