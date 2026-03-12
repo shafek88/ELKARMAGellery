@@ -1083,7 +1083,9 @@ height:140px;
 display:flex;
 justify-content:center;
 align-items:center;
-animation:logoZoom 3.5s ease forwards;
+opacity:0;
+animation:logoZoom 2s ease forwards;
+animation-delay:3s;   /* اللوجو يظهر بعد 3 ثواني */
 }
 
 .logo-box img{
@@ -1102,7 +1104,7 @@ transparent,
 rgba(255,255,255,0.6),
 transparent
 );
-animation:shineMove 3s linear forwards;
+animation:shineMove 3s linear forwards; /* الأنيميشن أطول */
 }
 
 @keyframes logoZoom{
@@ -1112,12 +1114,8 @@ opacity:0;
 transform:scale(0.5);
 }
 
-50%{
-opacity:1;
-transform:scale(1.2);
-}
-
 100%{
+opacity:1;
 transform:scale(1);
 }
 
@@ -4108,7 +4106,7 @@ if(isApp()) {
   window.addEventListener("load", function(){
     setTimeout(function(){
       splash.style.display="none";
-    }, 3500); // مدة ظهور الشاشة
+    }, 5000); // مدة ظهور الشاشة
   });
 } else {
   // الويب العادي: اخفيه فورًا
