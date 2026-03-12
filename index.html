@@ -32,7 +32,6 @@
 html,body{height:100%;margin:0;background:var(--bg-dark);color:var(--muted);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .hidden{display:none !important}
-
 /* ===========================
    Fullscreen Registration (step 0)
    =========================== */
@@ -1063,6 +1062,78 @@ img.effect-curtain{
   z-index:0;
 }
 
+/* animation for entry */
+#splash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+}
+
+.logo-box{
+position:relative;
+width:140px;
+height:140px;
+display:flex;
+justify-content:center;
+align-items:center;
+animation:logoZoom 2s ease forwards;
+}
+
+.logo-box img{
+width:100%;
+}
+
+.shine{
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,255,255,0.6),
+transparent
+);
+animation:shineMove 1.5s linear forwards;
+}
+
+@keyframes logoZoom{
+
+0%{
+opacity:0;
+transform:scale(0.5);
+}
+
+50%{
+opacity:1;
+transform:scale(1.2);
+}
+
+100%{
+transform:scale(1);
+}
+
+}
+
+@keyframes shineMove{
+
+0%{
+left:-100%;
+}
+
+100%{
+left:100%;
+}
+
+}
 
 /* ===== Responsive Header and Menu ===== */
 @media (max-width: 980px) {
@@ -1592,6 +1663,23 @@ img.effect-curtain{
       </div>
     </div>
 </div>
+<!-- install pop -->
+<div id="installPopup" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#000; color:white; padding:15px 20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:9999;">
+
+<span>Install Elkarma Gallery App</span>
+
+<button id="installBtn" style="margin-left:15px; padding:5px 12px;cursor: pointer;">Install</button>
+
+<button id="closePopup" style="margin-left:10px; cursor: pointer;">✕</button>
+
+</div>
+<!-- app entry -->
+<div id="splash">
+  <div class="logo-box">
+    <img src="icon-512.png" alt="Elkarma Gallery">
+    <div class="shine"></div>
+  </div>
+</div>
 
 <script>
 /* ============================
@@ -1664,6 +1752,44 @@ const fullscreenBtn = document.getElementById("fullscreenBtn");
 const bannerTrack = document.querySelector('.banner-track');
 
 const fcToggle = document.getElementById("fcToggle");
+
+// install pop
+
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+
+e.preventDefault();
+
+deferredPrompt = e;
+
+setTimeout(() => {
+
+document.getElementById("installPopup").style.display = "block";
+
+}, 5000);
+
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+
+document.getElementById("installPopup").style.display = "none";
+
+deferredPrompt.prompt();
+
+const { outcome } = await deferredPrompt.userChoice;
+
+deferredPrompt = null;
+
+});
+
+document.getElementById("closePopup").addEventListener("click", () => {
+
+document.getElementById("installPopup").style.display = "none";
+
+});
+
+
 
 function showMessage(msg, btnEl, duration = 2000) {
   // لو فيه رسالة قديمة امسحها
@@ -3965,6 +4091,29 @@ const dateSpan = document.getElementById('currentDate');
       about.classList.add('show');
     }
   });
+
+
+
+  // animation entry
+
+ function isApp() {
+  return (window.matchMedia('(display-mode: standalone)').matches) 
+      || (window.navigator.standalone === true); // iOS
+}
+
+const splash = document.getElementById("splash");
+
+if(isApp()) {
+  // التطبيق: أظهر الـ splash + animation
+  window.addEventListener("load", function(){
+    setTimeout(function(){
+      splash.style.display="none";
+    }, 2200); // مدة ظهور الشاشة
+  });
+} else {
+  // الويب العادي: اخفيه فورًا
+  splash.style.display="none";
+}
 
 // =========================
 // Info about the Owner
