@@ -1083,13 +1083,17 @@ height:140px;
 display:flex;
 justify-content:center;
 align-items:center;
-opacity:0;
+
+opacity:0;                /* اللوجو مخفي */
 animation:logoZoom 2s ease forwards;
-animation-delay:3s;   /* اللوجو يظهر بعد 3 ثواني */
+animation-delay:3s;       /* يظهر بعد 3 ثواني */
 }
 
 .logo-box img{
 width:100%;
+opacity:0;                /* نخفي الصورة */
+animation:showLogo 0.5s forwards;
+animation-delay:3s;       /* نفس توقيت ظهور اللوجو */
 }
 
 .shine{
@@ -1104,7 +1108,17 @@ transparent,
 rgba(255,255,255,0.6),
 transparent
 );
-animation:shineMove 3s linear forwards; /* الأنيميشن أطول */
+animation:shineMove 3s linear forwards;
+}
+
+
+@keyframes showLogo{
+from{
+opacity:0;
+}
+to{
+opacity:1;
+}
 }
 
 @keyframes logoZoom{
