@@ -1076,18 +1076,29 @@ align-items:center;
 z-index:9999;
 }
 
-.logo-box{
-position:relative;
-width:35vw;
-height:35vw;
-max-width:300px;
-max-height:300px;
+#splash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
 display:flex;
 justify-content:center;
 align-items:center;
+z-index:9999;
+}
 
-/* اللوجو يظهر مرة واحدة */
-animation:logoZoom 2s ease forwards;
+.logo-box{
+position:relative;
+width:30vw;
+height:30vw;
+max-width:270px;
+max-height:270px;
+display:flex;
+justify-content:center;
+align-items:center;
+animation:logoZoom 7s ease forwards;
 }
 
 .logo-box img{
@@ -1102,16 +1113,13 @@ top:0;
 left:-100%;
 width:100%;
 height:100%;
-
 background:linear-gradient(
 120deg,
 transparent,
 rgba(255,255,255,0.6),
 transparent
 );
-
-/* الضوء يتكرر */
-animation:shineMove 2.5s linear infinite;
+animation:shineMove 6s linear forwards;
 }
 
 @keyframes logoZoom{
@@ -4111,12 +4119,12 @@ const dateSpan = document.getElementById('currentDate');
 
 const splash = document.getElementById("splash");
 
-if(isApp()) {
+if(true) {
   // التطبيق: أظهر الـ splash + animation
   window.addEventListener("load", function(){
     setTimeout(function(){
       splash.style.display="none";
-    }, 5000); // مدة ظهور الشاشة
+    }, 8000); // مدة ظهور الشاشة
   });
 } else {
   // الويب العادي: اخفيه فورًا
