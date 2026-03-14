@@ -1583,7 +1583,7 @@ left:100%;
           <div id="show" class="masonry" style="margin-top:14px;min-height:220px"></div>
            
            <div id="footer-ad" style="text-align:center; margin-top:20px;height: 160px;">
-    <ins class="adsbygoogle"
+    <!-- <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-2862033904558579"
          data-ad-slot="2160239688"
@@ -1591,7 +1591,7 @@ left:100%;
          data-full-width-responsive="true"></ins>
     <script>
          (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    </script> -->
            </div>
 
           <div id="socials" class="social-card">
@@ -1634,15 +1634,38 @@ left:100%;
           </div>
 
           <div id="about">
-            <h2 class="card-title">About Us</h2>
-           <p class="muted">
-              We are here to present your memories and adventures in a joyful and delightful way, with a touch of nostalgia to make every moment special and unforgettable.
-          </p>
-          </div>
+<h2 class="card-title">About ELKARMAGallery</h2>
+
+<p class="muted">
+ELKARMAGallery is a creative platform designed to help people present their photos and memories in a beautiful and luxurious slideshow experience.
+</p>
+
+<p class="muted">
+Our goal is to transform simple photos into an elegant visual story using modern animation effects, music synchronization, and smart display tools.
+</p>
+
+<p class="muted">
+Users can upload photos, choose different animation styles, add music, and create a cinematic slideshow that feels alive and emotional.
+</p>
+
+<p class="muted">
+This project was created to combine technology with creativity, allowing everyone to share their memories in a unique and enjoyable way.
+</p>
+
+<p class="muted">
+ELKARMAGallery focuses on providing a smooth and elegant user experience for creating beautiful photo slideshows directly in the browser.
+</p>
+
+<p class="muted">
+Our platform allows users to upload photos, add music, customize animation effects, and export their slideshow as a video. The goal is to make storytelling through images simple and enjoyable for everyone.
+</p>
+
+</div>
 
           <footer style="margin-top:14px">
              ELKARMAGellery — Local Slideshow Experience · Luxury Design <span id="currentDate"></span>
              <a href="privacy-policy.html">Privacy Policy</a>
+             <a href="terms.html">Terms</a>
           </footer>
         </section>
       </div>
@@ -4119,7 +4142,7 @@ const dateSpan = document.getElementById('currentDate');
 
 const splash = document.getElementById("splash");
 
-if(true) {
+if(isApp()) {
   // التطبيق: أظهر الـ splash + animation
   window.addEventListener("load", function(){
     setTimeout(function(){
