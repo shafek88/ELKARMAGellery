@@ -354,6 +354,11 @@ async function exportVideo() {
     exportStatusEl.innerHTML = ''; // إزالة أي نص موجود
     exportStatusEl.appendChild(downloadLink);
 
+    // ✅ إضافة ملاحظة لتحويل WebM → MP4 أونلاين
+    const note = document.createElement('div');
+    note.innerHTML = '💡 يمكنك تحويل WebM إلى MP4 أونلاين <a href="https://cloudconvert.com/webm-to-mp4" target="_blank">هنا</a>';
+    exportStatusEl.appendChild(note);
+
     // حدث عند الضغط على الرابط
     downloadLink.addEventListener('click', async () => {
       // إخفاء الزر
