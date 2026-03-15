@@ -1098,7 +1098,7 @@ max-height:270px;
 display:flex;
 justify-content:center;
 align-items:center;
-animation:logoZoom 7s ease infinite;
+animation:logoZoom 2s ease infinite;
 }
 
 .logo-box img{
@@ -1119,7 +1119,7 @@ transparent,
 rgba(255,255,255,0.6),
 transparent
 );
-animation:shineMove 6s linear forwards;
+animation:shineMove 1s linear infinite;
 }
 
 @keyframes logoZoom{
@@ -1313,6 +1313,13 @@ left:100%;
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2862033904558579"
      crossorigin="anonymous"></script>
 <body>
+  <!-- app entry -->
+<div id="splash">
+  <div class="logo-box">
+    <img src="icon-512.png" alt="Elkarma Gallery">
+    <div class="shine"></div>
+  </div>
+</div>
   <!-- Header -->
   <div id="siteContent">
     <div class="header" role="banner" aria-label="Header">
@@ -1634,7 +1641,7 @@ left:100%;
           </div>
 
           <div id="about">
-<h2 class="card-title">About ELKARMAGallery</h2>
+<h1 class="card-title">About ELKARMAGallery</h1>
 
 <p class="muted">
 ELKARMAGallery is a creative platform designed to help people present their photos and memories in a beautiful and luxurious slideshow experience.
@@ -1711,13 +1718,6 @@ Our platform allows users to upload photos, add music, customize animation effec
 
 <button id="closePopup" style="margin-left:10px; cursor: pointer;">✕</button>
 
-</div>
-<!-- app entry -->
-<div id="splash">
-  <div class="logo-box">
-    <img src="icon-512.png" alt="Elkarma Gallery">
-    <div class="shine"></div>
-  </div>
 </div>
 
 <script>
@@ -4144,11 +4144,13 @@ const splash = document.getElementById("splash");
 
 if(isApp()) {
   // التطبيق: أظهر الـ splash + animation
-  window.addEventListener("load", function(){
-    setTimeout(function(){
-      splash.style.display="none";
-    }, 8000); // مدة ظهور الشاشة
-  });
+ document.addEventListener("DOMContentLoaded", function(){
+
+setTimeout(function(){
+document.getElementById("splash").style.display="none";
+},5000);
+
+});
 } else {
   // الويب العادي: اخفيه فورًا
   splash.style.display="none";
