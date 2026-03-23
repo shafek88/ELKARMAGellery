@@ -18,6 +18,7 @@
 <style>
   :root{
   --bg-dark: #050608;
+  --header-height: clamp(60px, 8vh, 80px);
   --panel: rgba(255,255,255,0.03);
   --muted: #b8c0c8;
   --gold: #d4af37;
@@ -63,6 +64,10 @@ input[type="range"] {
 /* ===========================
    Header (transparent)
    =========================== */
+   #siteContent {
+  padding-top: var(--header-height);
+}
+
 .logo::before{
   content:"";
   width:38px;
@@ -156,17 +161,51 @@ input[type="range"] {
 .sections-panel a{display:block;padding:8px 10px;border-radius:8px;color:white;font-weight: bold;}
 .sections-panel a:hover{background:rgba(255,255,255,0.02); color:var(--gold)}
 
+
+.hero {
+  text-align: center;
+  padding: clamp(70px, 12vh, 90px) 20px 40px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.hero-title {
+  font-size: clamp(26px, 5vw, 48px);
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 12px;
+  line-height: 1.3;
+  padding: 0 10px;
+}
+
+.hero-sub {
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: #ccc;
+  max-width: 600px;
+  margin: 0 auto 20px;
+  line-height: 1.6;
+  padding: 0 10px;
+}
+
+.hero-btn {
+  font-size: clamp(14px, 2.5vw, 16px);
+  padding: 12px clamp(18px, 4vw, 28px);
+  border-radius: 999px;
+  transition: 0.3s;
+}
+
+.hero-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(212,175,55,0.3);
+}
+
 /* ===== Banner Frame ===== */
 #banner {
   position: relative;
-  top: 17vh; /* نبدأ من تحت الهيدر */
-  width: 97vw;
-  height: calc(25vh); /* نسبي للنافذة */
-  max-height: 300px;
-  min-height: 180px;
+  width: 100%;
+  height: clamp(160px, 25vh, 300px);
+  margin-top: 20px;
   overflow: hidden;
-  background: rgba(0,0,0,0.05);
-  margin-top: 80px; /* نفس ارتفاع الهيدر */
 }
 
 
@@ -1061,10 +1100,6 @@ img.effect-curtain{
   transition: width 0.2s linear;
   z-index:0;
 }
-/* googel ads */
-.no-ads .adsbygoogle {
-  display: none !important;
-}
 
 /* ===== Responsive Header and Menu ===== */
 @media (max-width: 980px) {
@@ -1109,6 +1144,10 @@ img.effect-curtain{
 
 /* ===== Small Screens (Mobile) ===== */
 @media (max-width: 700px) {
+  :root{
+    --header-height: 70px;
+  }
+
    #banner {
     top: 15vh; /* فاصل أكبر قليلاً */
   }
@@ -1132,6 +1171,11 @@ img.effect-curtain{
 
 /* ===== Desktop Medium-Large ===== */
 @media (min-width: 1101px) and (max-width: 1599px) {
+
+:root{
+    --header-height: 90px;
+  }
+
   .masonry {
     column-count: 3;
     column-gap: 14px;
@@ -1169,6 +1213,9 @@ img.effect-curtain{
 
 /* ===== Large Screens (Desktop XL) ===== */
 @media (min-width: 1600px) {
+  :root{
+    --header-height: 90px;
+  }
   .container {
     max-width: 1600px;
     padding: 40px;
@@ -1253,11 +1300,27 @@ img.effect-curtain{
       </div>
     </div>
 
+    <!-- HERO SECTION -->
+<div class="hero">
+
+  <h1 class="hero-title">
+    Create Beautiful Photo Slideshows Online in Seconds
+  </h1>
+
+  <p class="hero-sub">
+    Upload your photos, organize them into slides, and present them beautifully — no PowerPoint needed.
+  </p>
+
+  <button id="heroStart" class="btn-primary hero-btn">
+    🔥 Start Creating Slideshow
+  </button>
+
+</div>
+
 <!-- banner  -->
    <div id="banner">
   <div class="banner-track"></div>
 </div>
-
 
     <!-- Page container -->
     <div class="container" id="mainSite">
@@ -1748,7 +1811,10 @@ document.getElementById("installPopup").style.display = "none";
 
 });
 
-
+// Hero BTN
+document.getElementById("heroStart").onclick = () => {
+  document.getElementById("upload").scrollIntoView({ behavior: "smooth" });
+};
 
 function showMessage(msg, btnEl, duration = 2000) {
   // لو فيه رسالة قديمة امسحها
