@@ -12,6 +12,32 @@
 <meta property="og:title" content="ELKARMA Gallery — Luxury Slideshow Experience" />
 <meta property="og:description" content="A cinematic photo gallery with fullscreen slideshow and smooth visual effects." />
 <meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.elkarmagallery.com/" />
+<meta property="og:image" content="https://www.elkarmagallery.com/images/og-cover.jpg" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ELKARMA Gallery — Luxury Slideshow Experience" />
+<meta name="twitter:description" content="Create cinematic photo slideshows online with music, transitions, and export — free, in your browser." />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://www.elkarmagallery.com/" />
+<meta name="theme-color" content="#050608" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ELKARMA Gallery",
+  "url": "https://www.elkarmagallery.com/",
+  "description": "Create cinematic photo slideshows online with music, animation effects, and video export, directly in your browser.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
@@ -1601,7 +1627,7 @@ img.effect-curtain{
           </div>
 
           <div id="about">
-<h1 class="card-title">About ELKARMAGallery</h1>
+<h2 class="card-title">About ELKARMAGallery</h2>
 
 <p class="muted">
 ELKARMAGallery is a creative platform designed to help people present their photos and memories in a beautiful and luxurious slideshow experience.
@@ -1625,6 +1651,16 @@ ELKARMAGallery focuses on providing a smooth and elegant user experience for cre
 
 <p class="muted">
 Our platform allows users to upload photos, add music, customize animation effects, and export their slideshow as a video. The goal is to make storytelling through images simple and enjoyable for everyone.
+</p>
+
+<h3 class="card-title" style="margin-top:18px;font-size:16px">How It Works</h3>
+<p class="muted">
+Getting started takes three simple steps. First, upload the photos you want to include using the "Upload Photos" panel — your images are processed locally in your browser and are not sent to any server. Second, pick an animation effect such as Zoom, Fade, Ken Burns, or Cinematic, and set how long each photo stays on screen. Third, optionally add a music track from the built-in library or upload your own audio file, then press Play or Loop to preview your slideshow instantly.
+</p>
+
+<h3 class="card-title" style="margin-top:18px;font-size:16px">Who Is It For?</h3>
+<p class="muted">
+ELKARMAGallery is built for anyone who wants to turn a batch of photos into a polished visual story without design software or video editing skills — birthdays, weddings, travel memories, family gatherings, or business showcases. Because everything runs directly in the browser, there is nothing to install and no account is required to try it out.
 </p>
 
 </div>
@@ -1946,6 +1982,7 @@ function loadBanner(images) {
 
     const img = document.createElement('img');
     img.src = item.src;
+    img.alt = item.caption ? `${item.caption} slideshow transition example` : 'Slideshow effect example';
     img.classList.add(item.effect);
 
     const label = document.createElement('div');
@@ -2943,6 +2980,7 @@ function createFullscreenOverlay() {
   `;
 
   fsImg = document.createElement('img');
+  fsImg.alt = 'Slideshow photo, fullscreen view';
   fsImg.style.cssText = `
     max-width: 90%;
     max-height: 90%;
